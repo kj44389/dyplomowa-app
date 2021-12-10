@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Layout from '../components/Layout/Layout';
-import { AuthContext } from '../lib/AuthContext';
+import AuthContext from '../lib/AuthContext';
 
 export default function Home({ Component , pageProps}) {
   // const [users, setUsers] = useState([]);
