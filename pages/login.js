@@ -1,6 +1,6 @@
 import React from 'react';
 import LoginForm from '../components/form/LoginForm';
-import AuthContext from '../lib/AuthContext';
+import { AuthContext } from '../lib/AuthContext';
 import { useContext } from 'react';
 
 
@@ -10,7 +10,7 @@ function login() {
      return (
           <div className='w-[100vw] h-[100vh] flex justify-center items-center bg-blue-50'>
                {/* <LoginForm /> */}
-               {login()}
+               {/* {login()} */}
           </div>
      )
 }
