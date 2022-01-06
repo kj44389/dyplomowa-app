@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "apiBaseUrl": "./pages/api/",
+        "checkJs": true,
+        "jsx": "react-jsx"
+    }
+}

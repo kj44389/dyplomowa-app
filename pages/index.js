@@ -1,35 +1,16 @@
-import fetch from 'isomorphic-fetch';
-import Head from 'next/head';
-import { useContext, useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { getSession, useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import Layout from '../components/Layout/Layout';
-import AuthContext from '../lib/AuthContext';
+import LoggedContent from '../components/Layout/LoggedContent/LoggedContent';
+import NotLoggedContent from '../components/Layout/notLoggedContent/NotLoggedContent';
 
-export default function Home({ Component , pageProps}) {
-  // const [users, setUsers] = useState([]);
-
-	// useEffect(async () => {
-  //   const response = fetch('./api/user/getAllUsers')
-  //     .then((res) => {
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       return (data[0]);
-  //     })
-  //     .then((data) => {
-  //       // console.log(data)
-  //       // console.log(crypto.randomUUID())
-  //       setUsers([{uuid:uuidv4(), data: data }])
-  //     })
-	// }, []);
-
-  const { user , login } = useContext(AuthContext);
+export default function Home({ Component, pageProps }) {
+	const { data, status } = useSession();
+	const user = data;
 
 	return (
-    // <>
-      <Layout>
-        <p>nested text</p>
-      </Layout>
+		// <>
+		<Layout>{user ? <LoggedContent /> : <NotLoggedContent />}</Layout>
 
 		// </>
 	);

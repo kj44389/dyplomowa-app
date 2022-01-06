@@ -1,19 +1,25 @@
 module.exports = {
 	mode: 'jit',
-	purge: [
-		'./pages/**/*.{js,ts,jsx,tsx}',
-		'./components/**/*.{js,ts,jsx,tsx}',
-	],
-	darkMode: false, // or 'media' or 'class'
+	purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
 	theme: {
 		extend: {
 			colors: {
-				primary: '#61B15A',
+				primarygreen: '#61B15A',
 			},
 		},
 	},
 	variants: {
 		extend: {},
 	},
-	plugins: [],
+	plugins: [require('daisyui')],
+
+	// config (optional)
+	daisyui: {
+		styled: true,
+		themes: true,
+		base: true,
+		utils: true,
+		logs: true,
+		rtl: false,
+	},
 };

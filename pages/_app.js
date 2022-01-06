@@ -1,14 +1,42 @@
-import 'tailwindcss/tailwind.css';
-import { AuthContextProvider } from '../lib/AuthContext';
+import 'tailwindcss/tailwind.css'
 
-function MyApp({ Component, pageProps }) {
-	return (
-		<>
-			<AuthContextProvider>
-				<Component {...pageProps} />
-			</AuthContextProvider>
-		</>
-	);
+import { SessionProvider, signIn, useSession } from 'next-auth/react'
+import { useContext, useEffect } from 'react'
+
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
+    return (
+        <SessionProvider session={session}>
+            {Component.auth ? (
+                <Auth>
+                    <Component {...pageProps} />
+                </Auth>
+            ) : (
+                <Component {...pageProps} />
+            )}
+        </SessionProvider>
+    )
 }
 
-export default MyApp;
+// function MyApp({ Component, pageProps}) {
+// 	return (
+// 		<SessionProvider>
+
+// 					<Component {...pageProps} />
+
+// 		</SessionProvider>
+// 	);
+// }
+
+function Auth({ children }) {
+    const { data: session, status } = useSession()
+    const isUser = !!session?.user
+
+    useEffect(() => {
+        if (status === 'loading') return
+        if (!isUser) signIn()
+    }, [isUser, status])
+    if (isUser) return children
+    return <div>Loading...</div>
+}
+
+export default MyApp

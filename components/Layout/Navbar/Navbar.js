@@ -1,27 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Account from './Account';
 import NavPill from './NavPill';
-import { useUser } from './../../../lib/useUser';
+import { useSession } from 'next-auth/react';
 
 function Navbar() {
+	const { data, status } = useSession();
+	const user = data?.user;
+
 	return (
-		<nav className="flex justify-between items-center w-screen h-15 pl-4 font-normal text-base bg-gray-600">
+		<nav className='navbar w-full flex justify-between items-center shadow-lg h-14 pl-4 font-normal text-sm bg-gray-600'>
 			{/* LogoType */}
-			<div className="flex items-center  h-full w-1/2">
-				<h1 className="w-auto cursor-pointer">
-					<span className="font-extrabold text-2xl text-primary">
-						Examine
-					</span>
-					<span className="font-extrabold text-2xl text-gray-100">
-						Lab
-					</span>
+			<div className='flex items-center  h-full w-1/2'>
+				<h1 className='w-auto cursor-pointer font-serif'>
+					<span className='font-extrabold text-2xl text-green-500'>Examine</span>
+					<span className='font-extrabold text-2xl text-gray-100'>Lab</span>
 				</h1>
 				{/* nav list */}
-				<ul className="h-full hidden md:flex ml-6  items-center uppercase no-underline cursor-pointer">
-					<NavPill text={'Stwórz test'} />
-					<NavPill text={'Moje testy'} />
-
-					<NavPill text={'Dołącz'} />
+				<ul className='h-full hidden md:flex ml-6  items-center uppercase no-underline cursor-pointer'>
+					{user && (
+						<>
+							<NavPill text={'Stwórz test'} path={'/tests/newTest'} />
+							<NavPill text={'Moje testy'} path={'/tests/show'} />
+						</>
+					)}
+					<NavPill text={'Dołącz'} path={'/tests/solve'} />
 				</ul>
 			</div>
 			{/* account info */}
