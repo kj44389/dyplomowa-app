@@ -28,7 +28,9 @@ const solve = () => {
 
 	return (
 		<Layout>
-			<div className="flex justify-center items-center p-5 w-full h-full">{fetchedData.length > 0 ? <SolveTest fetchedData={fetchedData} /> : null}</div>
+			<div className="flex justify-center items-center p-5 w-full h-full">
+				{fetchedData.length > 0 ? <SolveTest fetchedData={fetchedData} testCode={null} /> : null}
+			</div>
 		</Layout>
 	);
 };

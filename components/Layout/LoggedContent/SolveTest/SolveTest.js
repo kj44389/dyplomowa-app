@@ -1,17 +1,22 @@
 import _fetch from "isomorphic-fetch";
 import { absoluteUrlPrefix } from "next.config";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CodeForm from "./CodeForm/CodeForm";
 import Test from "./Test/Test";
-import { v4 } from "uuid";
-const SolveTest = ({ fetchedData }) => {
+
+import { useSession } from "next-auth/react";
+const SolveTest = ({ fetchedData, testCode }) => {
 	console.log("fetched ", fetchedData);
-	const [testCode, setTestCode] = useState("");
+
+	const [formTestCode, setFormTestCode] = useState("");
 	const [testData, setTestData] = useState([]);
 	const [testFound, setTestFound] = useState(false);
 
+	const { status } = useSession();
+	if (status === "loading") return null;
+
 	useEffect(() => {
-		testCode !== "" &&
+		if (testCode !== null) {
 			fetchedData.forEach((data) => {
 				_fetch(`${absoluteUrlPrefix}/api/test/getTest/${data.test_id}`, {
 					method: "GET",
@@ -23,13 +28,35 @@ const SolveTest = ({ fetchedData }) => {
 						test[0].test_code === testCode ? setTestData(test[0]) : null;
 					});
 			});
-	}, [testCode]);
+		}
+	}, []);
 
 	useEffect(() => {
+		console.log("form", formTestCode);
+		if (formTestCode === "" && testCode === null) return;
+		console.log("form in");
+		fetchedData.forEach((data) => {
+			if (testData.length > 0) return;
+			_fetch(`${absoluteUrlPrefix}/api/test/getTest/${data.test_id}`, {
+				method: "GET",
+			})
+				.then((res) => {
+					return res.json();
+				})
+				.then((test) => {
+					console.log("tdi", test[0].test_code, formTestCode);
+					test[0].test_code === formTestCode ? setTestData(test[0]) : null;
+				});
+		});
+	}, [formTestCode]);
+
+	useEffect(() => {
+		console.log("td", testData);
+		// @ts-ignore
 		testData?.test_id && setTestFound(true);
 	}, [testData]);
 
-	return !testFound ? <CodeForm setTestCode={setTestCode} /> : <Test testData={testData} />;
+	return !testFound ? <CodeForm key={`codeFormKey`} setFormTestCode={setFormTestCode} /> : <Test key={`testKey`} testData={testData} />;
 };
 
 export default SolveTest;

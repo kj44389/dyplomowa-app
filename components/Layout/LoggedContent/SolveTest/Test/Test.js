@@ -1,20 +1,22 @@
 import _fetch from "isomorphic-fetch";
 import { useSession } from "next-auth/react";
 import { absoluteUrlPrefix } from "next.config";
+import Router from "next/router";
 import { useEffect, useState } from "react";
-import useTimer from "lib/useTimer";
 import { v4 } from "uuid";
-
 import Answer from "./Answer";
 import Question from "./Question";
+import Timer from "./Timer";
 
 const Test = ({ testData }) => {
-	const { status } = useSession();
+	const { data: user, status } = useSession();
 
 	const [questions, setQuestions] = useState([]);
+	const [question, setQuestion] = useState({});
 	const [answers, setAnswers] = useState([]);
 	const [fetchStatus, setFetchStatus] = useState(false);
 	const [timeRunOut, setTimeRunOut] = useState(false);
+	const [timeLeft, setTimeLeft] = useState("");
 	const [testState, setTestState] = useState({
 		index: 0,
 		maxIndex: 0,
@@ -22,17 +24,12 @@ const Test = ({ testData }) => {
 
 	const [questionsState, setQuestionsState] = useState([]);
 
-	let timer = null;
-	const [timeLeft, setTimeLeft] = useState("");
-	const calculateTimeLeft = (passedTime) => {
-		const timeElements = passedTime.split(":");
-		let minutes = parseInt(timeElements[0]);
-		let seconds = parseInt(timeElements[1]);
-
-		if (seconds !== 0 || minutes !== 0) {
-			seconds === 0 ? ((seconds = 59), (minutes = minutes - 1)) : (seconds = seconds - 1);
+	const getShuffledArr = (arr) => {
+		if (arr.length === 1) {
+			return arr;
 		}
-		return `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}:00`;
+		const rand = Math.floor(Math.random() * arr.length);
+		return [arr[rand], ...getShuffledArr(arr.filter((_, i) => i != rand))];
 	};
 
 	// fetching questions
@@ -44,7 +41,7 @@ const Test = ({ testData }) => {
 					return res.json();
 				})
 				.then((data) => {
-					setQuestions(data);
+					setQuestions(getShuffledArr(data));
 				});
 		}
 	}, [status]);
@@ -57,7 +54,7 @@ const Test = ({ testData }) => {
 					return res.json();
 				})
 				.then((data) => {
-					setAnswers(data);
+					setAnswers(getShuffledArr(data));
 				});
 		}
 	}, [questions]);
@@ -76,45 +73,34 @@ const Test = ({ testData }) => {
 		}
 	}, [answers]);
 
-	//timer
 	useEffect(() => {
-		const { index } = testState;
-		let nextQuestionIndex = 0;
-		if (timeLeft === "" || timer != null) return;
-		let localTimeLeft = calculateTimeLeft(questions[index].question_time);
-
-		if (timeLeft === "00:00:00") {
-			nextQuestionIndex = questions.findIndex((question) => question.question_time !== "00:00:00");
-			if (nextQuestionIndex < 0) {
-				setTimeRunOut(true);
-				return;
-			}
-
-			setTestState((prev) => ({ ...prev, index: nextQuestionIndex }));
-			localTimeLeft = calculateTimeLeft(questions[nextQuestionIndex].question_time);
+		if (!fetchStatus) {
+			return;
 		}
-
-		timer = setTimeout(() => {
-			//update time left
-			setTimeLeft(localTimeLeft);
-		}, 1000);
-
-		if (nextQuestionIndex === 0) {
-			questions[index].question_time = localTimeLeft;
-		} else {
-			questions[nextQuestionIndex].question_time = localTimeLeft;
-		}
-
-		setQuestions((prev) => [...questions]);
-		return () => {
-			clearTimeout(timer);
-			timer = null;
-		};
-	}, [timeLeft]);
+		setQuestion(questions[testState.index]);
+	}, [testState]);
 
 	useEffect(() => {
 		console.log(questionsState);
 	}, [questionsState]);
+
+	const handleFinishTest = () => {
+		setTimeRunOut(true);
+		console.log("questionsStates - ", questionsState);
+		const res = _fetch(`${absoluteUrlPrefix}/api/test/results`, {
+			method: "POST",
+			headers: { contentType: "application/json" },
+			body: JSON.stringify({
+				questions: questions,
+				answers: answers,
+				questionsState: questionsState,
+				test_id: testData.test_id,
+				user_id: user.id,
+			}),
+		}).then((result) => result.json());
+
+		Router.replace("/");
+	};
 
 	const handleQuestionStateChange = (question_id, answer_id) => {
 		const stateIndex = questionsState.findIndex((state) => {
@@ -127,60 +113,62 @@ const Test = ({ testData }) => {
 	const handleTestStateIncrement = () => {
 		const { index, maxIndex } = testState;
 		if (index === maxIndex) return;
+		questions[index].question_time = timeLeft;
+		setQuestions((prev) => [...questions]);
+		setTimeLeft(questions[index + 1].question_time);
 		setTestState({ ...testState, index: index + 1 });
 	};
 
 	const handleTestStateDecrement = () => {
 		const { index } = testState;
 		if (index === 0) return;
+		questions[index].question_time = timeLeft;
+		setQuestions((prev) => [...questions]);
+		setTimeLeft(questions[index - 1].question_time);
 		setTestState({ ...testState, index: index - 1 });
 	};
 
 	return (
 		<div className="flex flex-col max-w-lg">
-			{!timeRunOut && (
+			{!timeRunOut && fetchStatus && (
 				<>
-					{questions
-						.filter((question, index) => {
-							return index === testState.index;
-						})
-						.map((question) => {
-							return (
-								<>
-									<Question
-										key={question.question_id}
-										question={question}
-										id={testState.index + 1}
-										numberOfQuestions={testState.maxIndex + 1}
-									>
-										{answers
-											.filter((answer) => {
-												return answer.question_id === question.question_id;
-											})
-											.map((answer, index, mappedArray) => {
-												return (
-													<>
-														{index === 0 ? (
-															<div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div>
-														) : null}
-														<Answer
-															key={answer.answer_id}
-															answer={answer}
-															time={question.question_time}
-															index={index}
-															question_id={question.question_id}
-															onClick={handleQuestionStateChange}
-														/>
-														{index !== mappedArray.length - 1 ? (
-															<div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div>
-														) : null}
-													</>
-												);
-											})}
-									</Question>
-								</>
-							);
-						})}
+					<>
+						<Timer
+							timeLeft={timeLeft}
+							setTimeLeft={setTimeLeft}
+							testState={testState}
+							questions={questions}
+							handleFinishTest={handleFinishTest}
+							setTestState={setTestState}
+							setQuestions={setQuestions}
+						/>
+
+						<Question key={question?.question_id} id={testState.index + 1} numberOfQuestions={testState.maxIndex + 1} question={question}>
+							{answers
+								.filter((answer) => {
+									return answer.question_id === question?.question_id;
+								})
+								.map((answer, index, mappedArray) => {
+									return (
+										<div key={v4()}>
+											{index === 0 ? <div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div> : null}
+
+											<Answer
+												key={answer.answer_id}
+												answer={answer}
+												index={index}
+												question_id={question?.question_id}
+												disabled={question?.question_time === "00:00:00" ? true : false}
+												picked={questionsState[questionsState.findIndex((state) => state.answer_id === answer.answer_id)]?.picked}
+												onClick={handleQuestionStateChange}
+											/>
+
+											{index !== mappedArray.length - 1 ? <div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div> : null}
+										</div>
+									);
+								})}
+						</Question>
+					</>
 
 					<div className="self-center space-x-5 my-2">
 						{testState.index === 0 ? (
@@ -205,7 +193,9 @@ const Test = ({ testData }) => {
 				</>
 			)}
 			{timeRunOut && <h2 className="text-lg my-3">Czas się skończył.</h2>}
-			<button className="btn btn-sm btn-outline self-center">Zakończ </button>
+			<button className="btn btn-sm btn-outline self-center" onClick={(e) => handleFinishTest()}>
+				Zakończ
+			</button>
 		</div>
 	);
 };
