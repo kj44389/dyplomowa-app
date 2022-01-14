@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { v4 } from "uuid";
 import Answer from "./Answer";
 import Question from "./Question";
+import ResultsCard from "./ResultsCard";
 import Timer from "./Timer";
 
 const Test = ({ testData }) => {
@@ -13,15 +14,14 @@ const Test = ({ testData }) => {
 
 	const [questions, setQuestions] = useState([]);
 	const [question, setQuestion] = useState({});
+	const [results, setResults] = useState([]);
+
 	const [answers, setAnswers] = useState([]);
 	const [fetchStatus, setFetchStatus] = useState(false);
+	const [resultsFetched, setResultsFetched] = useState(false);
 	const [timeRunOut, setTimeRunOut] = useState(false);
 	const [timeLeft, setTimeLeft] = useState("");
-	const [testState, setTestState] = useState({
-		index: 0,
-		maxIndex: 0,
-	});
-
+	const [testState, setTestState] = useState({ index: 0, maxIndex: 0 });
 	const [questionsState, setQuestionsState] = useState([]);
 
 	const getShuffledArr = (arr) => {
@@ -31,6 +31,12 @@ const Test = ({ testData }) => {
 		const rand = Math.floor(Math.random() * arr.length);
 		return [arr[rand], ...getShuffledArr(arr.filter((_, i) => i != rand))];
 	};
+
+	useEffect(() => {
+		window.addEventListener("blur", () => {
+			console.log("why u looking for help?");
+		});
+	}, []);
 
 	// fetching questions
 	useEffect(() => {
@@ -81,13 +87,14 @@ const Test = ({ testData }) => {
 	}, [testState]);
 
 	useEffect(() => {
-		console.log(questionsState);
-	}, [questionsState]);
+		if (results.length === 0) return;
+		setResultsFetched(true);
+	}, [results]);
 
 	const handleFinishTest = () => {
 		setTimeRunOut(true);
-		console.log("questionsStates - ", questionsState);
-		const res = _fetch(`${absoluteUrlPrefix}/api/test/results`, {
+
+		_fetch(`${absoluteUrlPrefix}/api/test/results`, {
 			method: "POST",
 			headers: { contentType: "application/json" },
 			body: JSON.stringify({
@@ -97,9 +104,13 @@ const Test = ({ testData }) => {
 				test_id: testData.test_id,
 				user_id: user.id,
 			}),
-		}).then((result) => result.json());
-
-		Router.replace("/");
+		})
+			.then((result) => {
+				return result.json();
+			})
+			.then((data) => {
+				setResults([data]);
+			});
 	};
 
 	const handleQuestionStateChange = (question_id, answer_id) => {
@@ -130,72 +141,78 @@ const Test = ({ testData }) => {
 
 	return (
 		<div className="flex flex-col max-w-lg">
-			{!timeRunOut && fetchStatus && (
+			{!resultsFetched && !timeRunOut && fetchStatus ? (
 				<>
-					<>
-						<Timer
-							timeLeft={timeLeft}
-							setTimeLeft={setTimeLeft}
-							testState={testState}
-							questions={questions}
-							handleFinishTest={handleFinishTest}
-							setTestState={setTestState}
-							setQuestions={setQuestions}
-						/>
+					{!timeRunOut && fetchStatus && (
+						<>
+							<>
+								<Timer
+									timeLeft={timeLeft}
+									setTimeLeft={setTimeLeft}
+									testState={testState}
+									questions={questions}
+									handleFinishTest={handleFinishTest}
+									setTestState={setTestState}
+									setQuestions={setQuestions}
+								/>
 
-						<Question key={question?.question_id} id={testState.index + 1} numberOfQuestions={testState.maxIndex + 1} question={question}>
-							{answers
-								.filter((answer) => {
-									return answer.question_id === question?.question_id;
-								})
-								.map((answer, index, mappedArray) => {
-									return (
-										<div key={v4()}>
-											{index === 0 ? <div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div> : null}
+								<Question key={question?.question_id} id={testState.index + 1} numberOfQuestions={testState.maxIndex + 1} question={question}>
+									{answers
+										.filter((answer) => {
+											return answer.question_id === question?.question_id;
+										})
+										.map((answer, index, mappedArray) => {
+											return (
+												<div key={v4()}>
+													{index === 0 ? <div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div> : null}
 
-											<Answer
-												key={answer.answer_id}
-												answer={answer}
-												index={index}
-												question_id={question?.question_id}
-												disabled={question?.question_time === "00:00:00" ? true : false}
-												picked={questionsState[questionsState.findIndex((state) => state.answer_id === answer.answer_id)]?.picked}
-												onClick={handleQuestionStateChange}
-											/>
+													<Answer
+														key={answer.answer_id}
+														answer={answer}
+														index={index}
+														question_id={question?.question_id}
+														disabled={question?.question_time === "00:00:00" ? true : false}
+														picked={questionsState[questionsState.findIndex((state) => state.answer_id === answer.answer_id)]?.picked}
+														onClick={handleQuestionStateChange}
+													/>
 
-											{index !== mappedArray.length - 1 ? <div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div> : null}
-										</div>
-									);
-								})}
-						</Question>
-					</>
+													{index !== mappedArray.length - 1 ? <div className="divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40"></div> : null}
+												</div>
+											);
+										})}
+								</Question>
+							</>
 
-					<div className="self-center space-x-5 my-2">
-						{testState.index === 0 ? (
-							<button className="btn" disabled>
-								Poprzedni
-							</button>
-						) : (
-							<button className="btn bg-green-500 border-0" onClick={(e) => handleTestStateDecrement()}>
-								Poprzedni
-							</button>
-						)}
-						{testState.index === testState.maxIndex ? (
-							<button className="btn" disabled>
-								Następny
-							</button>
-						) : (
-							<button className="btn bg-green-500 border-0" onClick={(e) => handleTestStateIncrement()}>
-								Następny
-							</button>
-						)}
-					</div>
+							<div className="self-center space-x-5 my-2">
+								{testState.index === 0 ? (
+									<button className="btn" disabled>
+										Poprzedni
+									</button>
+								) : (
+									<button className="btn bg-green-500 border-0" onClick={(e) => handleTestStateDecrement()}>
+										Poprzedni
+									</button>
+								)}
+								{testState.index === testState.maxIndex ? (
+									<button className="btn" disabled>
+										Następny
+									</button>
+								) : (
+									<button className="btn bg-green-500 border-0" onClick={(e) => handleTestStateIncrement()}>
+										Następny
+									</button>
+								)}
+							</div>
+						</>
+					)}
+					{timeRunOut && <h2 className="text-lg my-3">Czas się skończył.</h2>}
+					<button className="btn btn-sm btn-outline self-center" onClick={(e) => handleFinishTest()}>
+						Zakończ
+					</button>
 				</>
+			) : (
+				results.length > 0 && <ResultsCard results={results[0]} testName={testData.test_name} />
 			)}
-			{timeRunOut && <h2 className="text-lg my-3">Czas się skończył.</h2>}
-			<button className="btn btn-sm btn-outline self-center" onClick={(e) => handleFinishTest()}>
-				Zakończ
-			</button>
 		</div>
 	);
 };

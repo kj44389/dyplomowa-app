@@ -4,6 +4,8 @@ import React from "react";
 import Account from "./Account";
 import NavPill from "./NavPill";
 
+import { PlusCircleIcon, DocumentIcon, PencilIcon } from "@heroicons/react/outline";
+
 function Navbar() {
 	const { data, status } = useSession();
 	const user = data?.user;
@@ -13,24 +15,24 @@ function Navbar() {
 			{/* LogoType */}
 			<div className="flex items-center  h-full w-1/2">
 				<Link href="/">
-					<h1 className="w-auto cursor-pointer font-serif">
-						<span className="font-extrabold text-2xl text-green-500">Examine</span>
-						<span className="font-extrabold text-2xl text-gray-100">Lab</span>
+					<h1 className="w-auto cursor-pointer font-serif sm:text-base md:text-2xl">
+						<span className="font-extrabold text-green-500">Examine</span>
+						<span className="font-extrabold text-gray-100">Lab</span>
 					</h1>
 				</Link>
 				{/* nav list */}
-				<ul className="h-full hidden md:flex ml-6  items-center uppercase no-underline cursor-pointer">
+				<ul className="h-full flex ml-6  items-center uppercase no-underline cursor-pointer">
 					{user && (
 						<>
-							<NavPill text={"Stwórz test"} path={"/tests/newTest"} />
-							<NavPill text={"Moje testy"} path={"/tests/show"} />
+							<NavPill heroIcon={<PlusCircleIcon />} path={"/tests/newTest"} />
+							<NavPill heroIcon={<DocumentIcon />} path={"/tests/show"} />
 						</>
 					)}
-					<NavPill text={"Dołącz"} path={"/tests/solve"} />
+					<NavPill heroIcon={<PencilIcon />} path={"/tests/solve"} />
 				</ul>
 			</div>
-			{/* account info */}
 			<Account />
+			{/* account info */}
 		</nav>
 	);
 }

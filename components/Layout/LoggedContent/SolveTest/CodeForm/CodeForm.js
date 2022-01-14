@@ -1,5 +1,3 @@
-import React from "react";
-
 const CodeForm = ({ setFormTestCode }) => {
 	return (
 		<div className="w-full max-w-sm md:max-w-[600px] p-5 md:p-10 card bg-base-200">

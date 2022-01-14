@@ -1,5 +1,9 @@
+import { response } from "express";
+import _fetch from "isomorphic-fetch";
 import sql_query from "lib/db";
 import moment from "moment";
+import { absoluteUrlPrefix } from "next.config";
+import { useState } from "react";
 import { v4 } from "uuid";
 
 const findQuestionIndex = (questions, id) => {
@@ -51,7 +55,6 @@ export default async (req, res) => {
 		pointsScored += questionScore;
 	}
 
-	console.log(`points total: ${pointsTotal} points scored: ${pointsScored}`);
 	// test done insert
 	// test_done - { done_id, test_id, user_id, finished_at, points_scored, points_total, passed }
 	// INSERT INTO `test_done`(`done_id`, `test_id`, `user_id`, `finished_at`, `points_scored`, `points_total`, `passed`) VALUES (?,?,?,?,?,?,?)
@@ -66,17 +69,58 @@ export default async (req, res) => {
 		// test_done_answers - { id, done_id, answer_id, picked }
 		//INSERT INTO `test_done_answers`(`id`, `done_id`, `answer_id`, `picked`) VALUES (?,?,?,?)
 		const done_answer_id = v4();
-		console.log(arrayOfAnswers);
 		query = "INSERT INTO `test_done_answers`(`id`, `done_id`, `answer_id`, `picked`) VALUES ?";
 		results = sql_query(query, [arrayOfAnswers]);
 		if (!results) throw new Error("Couldn't associate answers with test done");
 
-		res.status(200).json({ msg: `test inserted successfully` });
+		const getData = await fetch(`${absoluteUrlPrefix}/api/metadata/${user_id}`, { method: "GET" })
+			.then((response) => {
+				return response.text();
+			})
+			.then((data) => {
+				return JSON.parse(data);
+			});
+		console.log("get", getData?.data[0]);
+		if (getData?.status !== 200) {
+			const passed = (pointsScored / pointsTotal) * 100 > 50 ? 1 : 0;
+			const body = JSON.stringify({ user_id: user_id, points_scored: pointsScored, points_total: pointsTotal, tests_passed: passed, tests_total: 1 });
+			const response = await _fetch(`${absoluteUrlPrefix}/api/metadata/${user_id}`, {
+				method: "POST",
+				body: body,
+				headers: { "Content-Type": "application/json" },
+			});
+			console.log("insert", response.status);
+			if (response.status === 200) {
+				res.status(200).json({ points_scored: pointsScored, points_total: pointsTotal, msg: `test inserted successfully` });
+			}
+		} else {
+			const { id, user_id, points_scored, points_total, tests_passed, tests_total } = getData?.data[0];
+			const passed = (pointsScored / pointsTotal) * 100 > 50 ? 1 : 0;
+			const body = JSON.stringify({
+				id: id,
+				user_id: user_id,
+				points_scored: pointsScored + points_scored,
+				points_total: pointsTotal + points_total,
+				tests_passed: tests_passed + passed,
+				tests_total: tests_total + 1,
+			});
+			const response = await _fetch(`${absoluteUrlPrefix}/api/metadata/${user_id}`, {
+				method: "PATCH",
+				body: body,
+				headers: { "Content-Type": "application/json" },
+			});
+			console.log("patch", response.status);
+			if (response.status === 200) {
+				res.status(200).json({ points_scored: pointsScored, points_total: pointsTotal, msg: `test inserted successfully` });
+			}
+		}
 	} catch (error) {
 		res.status(500).send(error.message);
 	}
 
 	//userMetaData
+	//get user meta data
+
 	// insert if not exists
 
 	// update if exists

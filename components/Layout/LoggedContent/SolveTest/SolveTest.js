@@ -6,8 +6,6 @@ import Test from "./Test/Test";
 
 import { useSession } from "next-auth/react";
 const SolveTest = ({ fetchedData, testCode }) => {
-	console.log("fetched ", fetchedData);
-
 	const [formTestCode, setFormTestCode] = useState("");
 	const [testData, setTestData] = useState([]);
 	const [testFound, setTestFound] = useState(false);
@@ -18,7 +16,7 @@ const SolveTest = ({ fetchedData, testCode }) => {
 	useEffect(() => {
 		if (testCode !== null) {
 			fetchedData.forEach((data) => {
-				_fetch(`${absoluteUrlPrefix}/api/test/getTest/${data.test_id}`, {
+				_fetch(`${absoluteUrlPrefix}/api/test/${data.test_id}`, {
 					method: "GET",
 				})
 					.then((res) => {
@@ -32,9 +30,8 @@ const SolveTest = ({ fetchedData, testCode }) => {
 	}, []);
 
 	useEffect(() => {
-		console.log("form", formTestCode);
 		if (formTestCode === "" && testCode === null) return;
-		console.log("form in");
+
 		fetchedData.forEach((data) => {
 			if (testData.length > 0) return;
 			_fetch(`${absoluteUrlPrefix}/api/test/getTest/${data.test_id}`, {
@@ -44,7 +41,6 @@ const SolveTest = ({ fetchedData, testCode }) => {
 					return res.json();
 				})
 				.then((test) => {
-					console.log("tdi", test[0].test_code, formTestCode);
 					test[0].test_code === formTestCode ? setTestData(test[0]) : null;
 				});
 		});

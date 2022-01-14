@@ -49,7 +49,22 @@ const Timer = ({ timeLeft, setTimeLeft, testState, questions, handleFinishTest, 
 		};
 	}, [timeLeft]);
 
-	return <div className="flex flex-1 justify-center items-center h-full w-full text-lg text-center">Pozostały czas: {timeLeft}</div>;
+	return (
+		<div className="flex flex-1 justify-center items-center h-full w-full text-lg text-center">
+			<div>
+				<span className="font-mono text-4xl countdown">
+					<span style={{ "--value": parseInt(timeLeft.split(":")[0]) }}></span>
+				</span>
+				min
+			</div>
+			<div>
+				<span className="font-mono text-4xl countdown">
+					<span style={{ "--value": parseInt(timeLeft.split(":")[1]) }}></span>
+				</span>
+				sec
+			</div>
+		</div>
+	);
 };
 
 export default Timer;
