@@ -3,7 +3,7 @@ import moment from "moment";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-const TakerStats = ({ testId, userId }) => {
+const TakerStats = ({ testId, userId, userEmail }) => {
 	const { status } = useSession();
 	const [fetchStatus, setFetchStatus] = useState(false);
 	const [stats, setStats] = useState({});
@@ -15,7 +15,7 @@ const TakerStats = ({ testId, userId }) => {
 		if (status === "loading") return;
 		else if (status === "unauthenticated") return;
 
-		_fetch(`/api/test/done/one/${testId}/${userId}`, { method: "GET" })
+		_fetch(`/api/test/done/one/${testId}/${userEmail}`, { method: "GET" })
 			.then((res) => res.json())
 			.then((data) => {
 				setColor(data.data[0].passed === 1 ? "text-green-400  text-center font-bold my-1" : "text-red-400  text-center font-bold my-1");
@@ -45,7 +45,6 @@ const TakerStats = ({ testId, userId }) => {
 		setFetchStatus(true);
 	}, [creator]);
 
-	console.log(testId);
 	return (
 		fetchStatus && (
 			<div className="shadow-lg rounded-2xl p-4 m-2 w-full max-w-xs bg-white dark:bg-gray-800 text-red-400">

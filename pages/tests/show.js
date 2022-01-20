@@ -6,6 +6,7 @@ import { absoluteUrlPrefix } from "next.config";
 import { useEffect, useState } from "react";
 
 function show() {
+	const [loading, setLoading] = useState(true);
 	const [testData, setTestData] = useState([]);
 	const [testDoneData, setTestDoneData] = useState([]);
 	const [testsIds, setTestsIds] = useState([]);
@@ -15,7 +16,7 @@ function show() {
 	useEffect(() => {
 		if (status === "loading") return;
 		if (status === "unauthenticated") return;
-		const testsFetch = _fetch(`${absoluteUrlPrefix}/api/test/getUserTests?user_id=${user.id}`, {
+		const testsFetch = _fetch(`${absoluteUrlPrefix}/api/test/getUserTests?user_email=${user.email}`, {
 			method: "GET",
 		})
 			.then((res) => res.json())
@@ -34,19 +35,19 @@ function show() {
 		})
 			.then((res) => res.json())
 			.then((data) => setTestData(data));
+	}, [testsIds]);
 
-		const testsDoneDataFetch = _fetch(`${absoluteUrlPrefix}/api/test/done/${user.id}`, { method: "GET" })
+	useEffect(() => {
+		if (!testData || !user) return;
+		const testsDoneDataFetch = _fetch(`${absoluteUrlPrefix}/api/test/done/${user.email}`, { method: "GET" })
 			.then((res) => res.json())
 			.then((data) => {
 				data.status === 404 ? setTestDoneData([]) : setTestDoneData(data.data);
 			});
-	}, [testsIds]);
+		setLoading(false);
+	}, [testData]);
 
-	return (
-		<Layout>
-			<MyTests tests={testData} testsDone={testDoneData} />
-		</Layout>
-	);
+	return <Layout>{!loading && <MyTests tests={testData} testsDone={testDoneData} />}</Layout>;
 }
 
 export default show;

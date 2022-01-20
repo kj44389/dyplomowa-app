@@ -5,6 +5,9 @@ import Question from "./Question/Question";
 import crypto from "crypto";
 import { useSession } from "next-auth/react";
 import { type } from "os";
+import moment from "moment";
+import router from "next/router";
+// moment(testData.test_date).format("YYYY-MM-DD HH:mm")
 
 function NewTest() {
 	const { data, status } = useSession();
@@ -12,18 +15,22 @@ function NewTest() {
 	const code = crypto.randomBytes(8).toString("hex");
 	const [test, setTest] = useState({
 		id: test_id,
-		date: "",
+		date: `${moment().add(1, "days").format("yyyy-MM-DDThh:mm")}`,
 		name: "",
 		code: code,
-		test_creator: data?.id,
+		test_creator: "",
 		type: "PUBLIC",
+		emails: "",
 	});
+
+	useEffect(() => {
+		if (status === "loading" || !data) return;
+		setTest({ ...test, test_creator: data.id });
+	}, [status]);
+
 	const [questions, setquestions] = useState([]);
 	const [answers, setanswers] = useState([]);
 
-	useEffect(() => {
-		console.log([...Object.values(test)]);
-	}, [test]);
 	async function handleQuestionsUpdate(question) {
 		questions[question.id - 1] = question;
 		setquestions((prevVal) => [...prevVal]);
@@ -64,7 +71,7 @@ function NewTest() {
 		]);
 	}
 
-	function handleSubmit() {
+	async function handleSubmit() {
 		console.log("test", test);
 		console.log("questions", questions);
 		console.log("answers", answers);
@@ -73,7 +80,8 @@ function NewTest() {
 			answers: answers,
 			test: test,
 		});
-		const res = fetch(`${absoluteUrlPrefix}/api/test/${test.id}`, { method: "POST", body: body });
+		const res = await fetch(`${absoluteUrlPrefix}/api/test/${test.id}`, { method: "POST", body: body }).then((res) => res.json());
+		if (res.status === 200) router.push("/tests/show");
 	}
 
 	return (
@@ -92,7 +100,12 @@ function NewTest() {
 					<label className="label">
 						<span className="label-text">Data zakończenia testu</span>
 					</label>
-					<input type="datetime-local" className="input" onChange={(e) => setTest({ ...test, date: e.target.value })} />
+					<input
+						type="datetime-local"
+						className="input"
+						defaultValue={moment().add(1, "days").format("yyyy-MM-DDThh:mm")}
+						onChange={(e) => setTest({ ...test, date: e.target.value })}
+					/>
 				</div>
 				{/* test type */}
 				<div className="form-control">
@@ -103,6 +116,13 @@ function NewTest() {
 						<option value="PUBLIC">Publiczny</option>
 						<option value="PRIVATE">Prywatny</option>
 					</select>
+				</div>
+				{/* participants emails */}
+				<div className="form-control">
+					<label className="label">
+						<span className="label-text">Emaile użytkowników (oddziel przecinkiem)</span>
+					</label>
+					<input type="text" placeholder="Emaile użytkowników" className="input" onBlur={(e) => setTest({ ...test, emails: e.target.value })} />
 				</div>
 			</div>
 

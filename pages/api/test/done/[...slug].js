@@ -16,7 +16,7 @@ export default async (req, res) => {
 		console.log(slug);
 		let results;
 		if (slug[0] === "one") {
-			const query = "SELECT * FROM test_done WHERE test_id=? and user_id = ?";
+			const query = "SELECT * FROM test_done WHERE test_id=? and user_email = ?";
 			results = await sql_query(query, [slug[1], slug[2]]);
 		} else if (slug[0] === "all") {
 			const query = "SELECT * FROM test_done WHERE test_id = ?";

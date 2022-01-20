@@ -1,4 +1,6 @@
+import { set } from "express/lib/application";
 import sql_query from "lib/db";
+import { getSession } from "next-auth/react";
 
 function notFoundException(status, message) {
 	this.status = status;
@@ -6,11 +8,13 @@ function notFoundException(status, message) {
 }
 
 export default async (req, res) => {
+	const session = await getSession({ req });
 	const test_id = req.query.testId;
-	console.log("api - test id:", test_id);
 	try {
+		if (!session) throw new notFoundException(405, "not authorized to create new test");
+
 		if (req.method === "GET") {
-			const query = "SELECT * FROM tests WHERE test_id IN (?)";
+			const query = "SELECT * FROM tests WHERE test_id =?";
 			const results = await sql_query(query, [test_id]);
 			if (results.length == 0) {
 				throw new notFoundException(404, "Tests not found!");
@@ -21,6 +25,10 @@ export default async (req, res) => {
 			const questions = body.questions;
 			const answers = body.answers;
 			const test = body.test;
+			let emails = test.emails.split(",");
+			for (let i = 0; i < emails.length; i++) {
+				emails[i] = emails[i].trim();
+			}
 			let query = "INSERT INTO `tests`(`test_id`, `test_date`, `test_name`, `test_code`, `test_creator`, `test_type`) VALUES (?,?,?,?,?,?)";
 			let results = sql_query(query, [test.id, test.date, test.name, test.code, test.test_creator, test.type]);
 
@@ -59,6 +67,17 @@ export default async (req, res) => {
 						results = sql_query(query, [question.question_id, answer.answer_id]);
 					});
 			});
+
+			//creating relation test-users
+			emails.map((email) => {
+				query = "INSERT INTO test_participants(id,user_email,test_id) VALUES (NULL,?,?)";
+				results = sql_query(query, [email, test_id]);
+			});
+			if (!emails.includes(session.email)) {
+				query = "INSERT INTO test_participants(id,user_email,test_id) VALUES (NULL,?,?)";
+				results = sql_query(query, [session.email, test_id]);
+			}
+			return res.json({ status: 200, statusText: "Test created successfully" });
 		}
 	} catch (err) {
 		if (err instanceof notFoundException) {

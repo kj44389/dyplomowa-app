@@ -1,4 +1,4 @@
-import sql_query from 'lib/db';
+import sql_query from "lib/db";
 
 function notFoundException(status, message) {
 	this.status = status;
@@ -7,12 +7,12 @@ function notFoundException(status, message) {
 
 export default async (req, res) => {
 	const body = req.body;
-	const user_id = req.query.user_id;
+	const user_email = req.query.user_email;
 	try {
-		const query = `SELECT * FROM test_participants WHERE user_id IN (?)`;
-		const results = await sql_query(query, [user_id]);
+		const query = `SELECT * FROM test_participants WHERE user_email IN (?)`;
+		const results = await sql_query(query, [user_email]);
 		if (results.length == 0) {
-			throw new notFoundException(404, 'Tests not found!');
+			throw new notFoundException(404, "Tests not found!");
 		}
 		return res.json(results);
 	} catch (err) {

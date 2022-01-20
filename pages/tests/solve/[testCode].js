@@ -16,7 +16,7 @@ const solve = () => {
 		if (status === "loading") return;
 		if (status === "authenticated") {
 			console.log(data);
-			const uri = `${absoluteUrlPrefix}/api/test/getUserTests?user_id=${data.id}`;
+			const uri = `${absoluteUrlPrefix}/api/test/getUserTests?user_email=${data.email}`;
 			_fetch(uri, { method: "GET" })
 				.then((res) => {
 					return res.json();

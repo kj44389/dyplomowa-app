@@ -8,37 +8,48 @@ import { useState, useEffect } from "react";
 
 const testStats = () => {
 	const router = useRouter();
-	const [testId, setTestId] = useState("");
-	const [fetchStatus, setFetchStatus] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [testData, setTestData] = useState({});
 	const [doneTestData, setDoneTestData] = useState({});
-	const { data, status } = useSession();
+	const [pageState, setPageState] = useState({});
+	const { data: user, status } = useSession();
 
 	useEffect(() => {
-		if (status === "loading") return;
-		if (status === "unauthenticated") console.log("niezalogowany");
-		setTestId(router.query.test_id);
-	}, [status]);
+		let state = {};
+		if (router.query.test_id) {
+			state = { test_id: router.query.test_id, user: user };
+			localStorage.setItem("state", JSON.stringify(state));
+		} else state = JSON.parse(localStorage.getItem("state"));
+		if (state.test_id) setPageState({ ...state });
+	}, []);
+
 	useEffect(() => {
-		if (testId === "") return;
-		_fetch(`/api/test/${testId}`, { method: "GET" })
+		if (!pageState?.test_id || !pageState?.user) return;
+		console.log(testData, pageState);
+		_fetch(`/api/test/${pageState.test_id}`, { method: "GET" })
 			.then((res) => res.json())
 			.then((data) => setTestData(data[0]));
 
 		// _fetch(`/api/test/done/all/${testId}`, { method: "GET" })
 		// 	.then((res) => res.json())
 		// 	.then((data) => setDoneTestData(data));
-		setFetchStatus(true);
-	}, [testId]);
+	}, [pageState]);
+	useEffect(() => {
+		if (!pageState?.test_id || !pageState?.user || !testData) return;
+		console.log(testData, pageState);
+		setLoading(false);
+	}, [testData]);
 
-	console.log(testData);
-	// console.log(data.id, testData.test_creator);
+	const statsRender = (id, test_creator) => {
+		if (loading || !test_creator || !id) return;
+		console.log(id, test_creator);
+		if (id === test_creator) return <CreatorStats testId={pageState?.test_id} userId={pageState?.user.id} />;
+		return <TakerStats testId={pageState?.test_id} userId={pageState?.user.id} userEmail={pageState?.user.email} />;
+	};
+
 	return (
 		<Layout>
-			{" "}
-			<div className="flex justify-center items-center my-4">
-				{fetchStatus && data.id !== testData.test_creator ? <TakerStats testId={testId} userId={data.id} /> : <CreatorStats />}
-			</div>
+			<div className="flex justify-center items-center my-4">{!loading && statsRender(pageState?.user.id, testData?.test_creator)}</div>
 		</Layout>
 	);
 };

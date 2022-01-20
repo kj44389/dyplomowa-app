@@ -8,7 +8,7 @@ const StatsCard = ({ icon, title, data }) => {
 				<p className="text-md text-black dark:text-white ml-2">{title}</p>
 			</div>
 			<div className="flex flex-col justify-start">
-				<p className="text-gray-700 dark:text-gray-100 text-4xl text-left font-bold my-4">{data}</p>
+				<p className="text-gray-700 dark:text-gray-100 text-4xl text-left font-bold my-4">{title === "Total Accuracy" && data === "NaN%" ? 0 : data}</p>
 				{/* <div className="flex items-center text-green-500 text-sm">
 					<svg width="20" height="20" fill="currentColor" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
 						<path d="M1408 1216q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45 19-45l448-448q19-19 45-19t45 19l448 448q19 19 19 45z"></path>

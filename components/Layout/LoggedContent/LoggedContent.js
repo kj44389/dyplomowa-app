@@ -21,7 +21,11 @@ const LoggedContent = () => {
 			.then((res) => {
 				return res.json();
 			})
-			.then((data) => setMetaData(data.data[0]));
+			.then((data) => {
+				console.log(data.status !== 200);
+				setMetaData({ points_scored: 0, points_total: 0, tests_passed: 0, tests_total: 0 });
+				if (data.status === 200) setMetaData(data.data[0]);
+			});
 	}, [status]);
 
 	useEffect(() => {

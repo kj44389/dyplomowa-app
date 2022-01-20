@@ -34,7 +34,7 @@ const SolveTest = ({ fetchedData, testCode }) => {
 
 		fetchedData.forEach((data) => {
 			if (testData.length > 0) return;
-			_fetch(`${absoluteUrlPrefix}/api/test/getTest/${data.test_id}`, {
+			_fetch(`${absoluteUrlPrefix}/api/test/${data.test_id}`, {
 				method: "GET",
 			})
 				.then((res) => {

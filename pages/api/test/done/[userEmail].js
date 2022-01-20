@@ -6,11 +6,11 @@ function Exception({ status, message }) {
 }
 
 export default async (req, res) => {
-	const userId = req.query.userId;
+	const userEmail = req.query.userEmail;
 
 	try {
-		const query = "SELECT * FROM test_done WHERE user_id = ?";
-		const results = await sql_query(query, [userId]);
+		const query = "SELECT * FROM test_done WHERE user_email = ?";
+		const results = await sql_query(query, [userEmail]);
 
 		if (results.length === 0) {
 			throw new Exception({ status: 404, message: "Done tests not found" });

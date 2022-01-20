@@ -14,7 +14,7 @@ function UserInfo() {
 		await signOut();
 	}
 	async function signInHandler() {
-		Router.push("/auth/signin?#");
+		Router.replace("/auth/signin?#");
 	}
 
 	return (
@@ -38,8 +38,10 @@ function UserInfo() {
                             {user.name}
                         </span>
                     </div> */}
-					<span className="hidden md:flex">Wyloguj</span>
-					<AccessButton heroIcon={<LogoutIcon />} onClick={signOutHandler} style={"w-5"} />
+					<span className="hidden md:flex" onClick={signOutHandler}>
+						Wyloguj
+						<AccessButton heroIcon={<LogoutIcon />} style={"w-5"} />
+					</span>
 				</span>
 			) : (
 				<>
@@ -48,8 +50,10 @@ function UserInfo() {
                          bg-gray-700 bg-opacity-40 text-gray-100 items-center text-black-400 font-medium transition-colors
                          hover:bg-primary hover:text-gray-100 space-x-3"
 					>
-						<span className="hidden md:flex">Zaloguj</span>
-						<AccessButton heroIcon={<LoginIcon />} onClick={signInHandler} style={"w-5"} />
+						<span className="hidden md:flex" onClick={signInHandler}>
+							Zaloguj
+							<AccessButton heroIcon={<LoginIcon />} style={"w-5"} />
+						</span>
 					</span>
 					{/* <span
 						className="h-full w-12 p-3 border-r border-gray-600 flex justify-center
