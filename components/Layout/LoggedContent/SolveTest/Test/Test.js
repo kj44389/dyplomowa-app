@@ -1,36 +1,3 @@
-<<<<<<< Updated upstream
-import _fetch from 'isomorphic-fetch';
-import { useSession } from 'next-auth/react';
-import { absoluteUrlPrefix } from 'next.config';
-import React, { useEffect, useState } from 'react';
-
-import { serialize, deserialize } from 'react-serialize';
-import Answer from './Answer';
-import Question from './Question';
-
-const Test = ({ testData }) => {
-	const { status } = useSession();
-	const [questions, setQuestions] = useState([]);
-	const [answers, setAnswers] = useState([]);
-	const [fetched, setFetched] = useState(false);
-	const [questionState, setQuestionState] = useState([]);
-	const [testState, setTestState] = useState({
-		index: 0,
-		maxIndex: 0,
-	});
-	// fetching questions
-	useEffect(() => {
-		if (status === 'loading') return;
-		if (status === 'authenticated') {
-			const fetched = _fetch(`${absoluteUrlPrefix}/api/test/getQuestions/${testData.test_id}`, { method: 'GET' })
-				.then((res) => {
-					return res.json();
-				})
-				.then((data) => {
-					setQuestions(data);
-				});
-		}
-=======
 import _fetch from "isomorphic-fetch";
 import { useSession } from "next-auth/react";
 import { absoluteUrlPrefix } from "next.config";
@@ -115,19 +82,12 @@ const Test = ({ testData, fullName, formEmail }) => {
 				setQuestions(shuffledData);
 				setQuestionIds(questions_ids);
 			});
->>>>>>> Stashed changes
 	}, [status]);
 
 	useEffect(() => {
-<<<<<<< Updated upstream
-		console.log(JSON.stringify(questions));
-		if (questions.length > 0) {
-			const fetched = _fetch(`${absoluteUrlPrefix}/api/test/getQuestionAnswers/`, { method: 'POST', body: JSON.stringify(questions) })
-=======
 		if (questionsIds.length > 0  && !fetchStatus) {
 			console.log(JSON.stringify(questionsIds))
 			const fetchStatus = _fetch(`${absoluteUrlPrefix}/api/question/${JSON.stringify(questionsIds)}/answers`, { method: "GET"})
->>>>>>> Stashed changes
 				.then((res) => {
 					return res.json();
 				})
@@ -135,21 +95,9 @@ const Test = ({ testData, fullName, formEmail }) => {
 					setAnswers(data);
 				});
 		}
-<<<<<<< Updated upstream
-		setTestState({ ...testState, maxIndex: questions.length - 1 });
-	}, [questions]);
-=======
 	}, [questionsIds]);
->>>>>>> Stashed changes
 
 	useEffect(() => {
-<<<<<<< Updated upstream
-		if (answers.length > 0) {
-			setFetched(true);
-		}
-	}, [answers]);
-
-=======
 		if (answers.length > 0 && !fetchStatus) {
 			console.log(answers);
 			setFetchStatus(true);
@@ -207,7 +155,6 @@ const Test = ({ testData, fullName, formEmail }) => {
 		setQuestionsState([...questionsState]);
 	};
 
->>>>>>> Stashed changes
 	const handleTestStateIncrement = () => {
 		const { index, maxIndex } = testState;
 		if (index === maxIndex) return;
@@ -222,56 +169,6 @@ const Test = ({ testData, fullName, formEmail }) => {
 
 	console.log(questions);
 	return (
-<<<<<<< Updated upstream
-		<div className='flex flex-col max-w-lg'>
-			{questions
-				.filter((question, index) => {
-					return index === testState.index;
-				})
-				.map((question) => {
-					return (
-						<>
-							<Question key={question.question_id} question={question} id={testState.index + 1} numberOfQuestions={testState.maxIndex + 1}>
-								{answers
-									.filter((answer) => {
-										return answer.question_id === question.question_id;
-									})
-									.map((answer, index, mappedArray) => {
-										console.log(index, mappedArray.length);
-										return (
-											<>
-												{index === 0 ? <div className='divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40'></div> : null}
-												<Answer key={answer.answer_id} answer={answer} index={index} />
-												{index !== mappedArray.length - 1 ? <div className='divider max-w-sm after:bg-gray-600/40 before:bg-gray-600/40'></div> : null}
-											</>
-										);
-									})}
-							</Question>
-						</>
-					);
-				})}
-
-			{/* show question */}
-
-			<div className='self-center space-x-5 my-2'>
-				{testState.index === 0 ? (
-					<button className='btn' disabled>
-						Poprzedni
-					</button>
-				) : (
-					<button className='btn bg-green-500 border-0' onClick={(e) => handleTestStateDecrement()}>
-						Poprzedni
-					</button>
-				)}
-				{testState.index === testState.maxIndex ? (
-					<button className='btn' disabled>
-						Następny
-					</button>
-				) : (
-					<button className='btn bg-green-500 border-0' onClick={(e) => handleTestStateIncrement()}>
-						Następny
-					</button>
-=======
 		<>
 			<div className="flex flex-col max-w-lg">
 				{!resultsFetched && !timeRunOut && fetchStatus ? (
@@ -345,7 +242,6 @@ const Test = ({ testData, fullName, formEmail }) => {
 					</>
 				) : (
 					results.length > 0 && <ResultsCard results={results} testName={testData.test_name} />
->>>>>>> Stashed changes
 				)}
 			</div>
 

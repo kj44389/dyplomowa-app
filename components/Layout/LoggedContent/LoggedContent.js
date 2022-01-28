@@ -1,15 +1,13 @@
-import React from 'react'
+import _fetch from 'isomorphic-fetch';
+import { useSession } from 'next-auth/react';
+import { absoluteUrlPrefix } from 'next.config';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react'
 
 function LoggedContent() {
     return <div>logged</div>
 }
 
-<<<<<<< Updated upstream
-export default LoggedContent
-=======
-const LoggedContent = () => {
-	const [metaData, setMetaData] = useState([]);
-	const [fetchStatus, setFetchStatus] = useState(false);
 	const { data, status } = useSession();
 	const router = useRouter();
 
@@ -70,4 +68,3 @@ export default LoggedContent;
 //			{/* total picked answers */}
 //
 //			{/*  */}
->>>>>>> Stashed changes

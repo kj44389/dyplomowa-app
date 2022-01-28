@@ -1,21 +1,13 @@
+import  Head  from 'next/head';
 import Navbar from './Navbar/Navbar'
 
 function Layout({ children }) {
     return (
         <>
             {/* navbar */}
-            <Navbar />
+            <Head>
             {/* sidebar */}
 
-<<<<<<< Updated upstream
-            {/* content */}
-            <main>
-                {children}
-                {/* foother */}
-            </main>
-        </>
-    )
-=======
 				<title>ExamineLab - Your best online testing site</title>
 				<meta name="title" content="ExamineLab - Your best online testing site" />
 				<meta
@@ -52,7 +44,6 @@ function Layout({ children }) {
 			</main>
 		</>
 	);
->>>>>>> Stashed changes
 }
 
 export default Layout
