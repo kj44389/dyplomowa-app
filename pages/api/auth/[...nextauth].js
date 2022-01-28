@@ -20,6 +20,7 @@ export default nextAuth({
 				password: { label: 'password', type: 'password' },
 			},
 			authorize: async (credentials, req) => {
+<<<<<<< Updated upstream
 				// Add logic here to look up the user from the credentials supplied
 				// const user = {
 				// 	id: 1,
@@ -29,6 +30,14 @@ export default nextAuth({
 				// console.log(+'/user/getOneUser/' + req.body.email)
 				const data = await (await _fetch(absoluteUrlPrefix + '/api/user/getOneUser/' + req.body.email, { method: 'POST' })).json();
 				// console.log('next-config --------------', user)
+=======
+				const data = await _fetch (`${absoluteUrlPrefix}/api/user?by=user_email&user_email=${credentials.email}`, { method: "GET" }).then(response=>response.json()).then(data=>{return data[0]})
+
+				const encrypted = crypto.pbkdf2Sync(credentials.password, process.env.CRYPTO_SALT, 1000, 64, `sha512`).toString(`hex`);
+
+				if (data.user_password !== encrypted) return null;
+
+>>>>>>> Stashed changes
 				const user = {
 					id: data.user_id,
 					email: data.user_email,

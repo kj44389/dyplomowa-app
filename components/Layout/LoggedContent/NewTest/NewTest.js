@@ -24,7 +24,7 @@ function NewTest() {
 	async function handleQuestionsUpdate(question) {
 		questions[question.id - 1] = question;
 		setquestions((prevVal) => [...prevVal]);
-		console.log(questions);
+
 	}
 	async function handleAnswersUpdate(answer) {
 		answers[answer.id - 1] = answer;
@@ -61,10 +61,14 @@ function NewTest() {
 		]);
 	}
 
+<<<<<<< Updated upstream
 	function handleSubmit() {
 		console.log('test', test);
 		console.log('questions', questions);
 		console.log('answers', answers);
+=======
+	async function handleSubmit() {
+>>>>>>> Stashed changes
 		const body = JSON.stringify({
 			questions: questions,
 			answers: answers,

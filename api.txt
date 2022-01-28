@@ -1,0 +1,16 @@
+/user -> get post
+TODO: /user/:uid -> patch delete
+/users -> get x
+/test -> get post x 
+TODO: /test/:tid -> patch post
+/test/:tid/questions -> get x
+/test/:tid/answers -> get - to samo co przy /answers
+/tests -> get x
+/questions -> get x
+TODO: /question -> get post 
+/question/:quid -> patch delete 
+/question/:quid/answers -> get x
+TODO: /answers -> get               - nie wiem czy potrzebne skoro jest /quid/answers
+TODO: /:questionIds/answer -> get post           ?
+TODO: /answer/:aid -> patch delete  ?
+

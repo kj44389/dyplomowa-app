@@ -17,7 +17,7 @@
         "moment": "^2.29.1",
         "mysql": "^2.18.1",
         "netlify-identity-widget": "^1.9.2",
-        "next": "latest",
+        "next": "^12.0.8",
         "next-auth": "^4.0.5",
         "next-connect": "^0.11.0",
         "react": "^17.0.2",

@@ -49,9 +49,9 @@ function Answer({ props }) {
 	}, [answer.answer_addon]);
 
 	useEffect(() => {
-		// console.log(answer.answer_addon_src);
+
 		setUploadingStatus('done');
-		// console.log(answer.answer_addon_src);
+
 	}, [answer.answer_addon_src]);
 
 	async function handleAddFile(form) {
@@ -62,7 +62,7 @@ function Answer({ props }) {
 		let { data, filepath } = await res.json();
 		filepath = filepath.replaceAll('\\', '/');
 		handleAnswerChange('answer_addon_src', filepath);
-		// console.log(answer.answer_addon_src);
+
 	}
 
 	async function handleAnswerChange(what_changing, value) {
