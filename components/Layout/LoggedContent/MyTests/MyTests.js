@@ -1,7 +1,7 @@
-import { useSession } from 'next-auth/react'
-import _fetch from 'isomorphic-fetch'
-import { v4 } from 'uuid'
-import moment from 'moment'
+import { useSession } from 'next-auth/react';
+import _fetch from 'isomorphic-fetch';
+import { v4 } from 'uuid';
+import moment from 'moment';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 // import crypto from 'crypto'
@@ -9,20 +9,23 @@ import { useState, useEffect } from 'react';
 function MyTests({ tests, testsDone }) {
 	const { data: user, status } = useSession();
 	const [loading, setLoading] = useState(true);
+
 	useEffect(() => {
-		if (status === "loading" || !user) return null;
+		console.log(status, user);
+		if (status === 'loading' || !user) return null;
 		setLoading(false);
+		console.log(tests, testsDone);
 	}, [status]);
 
-	moment.locale("pl");
+	moment.locale('pl');
 
 	return (
 		!loading && (
-			<div className="flex justify-center overflow-x-auto">
+			<div className='flex justify-center overflow-x-auto'>
 				{tests.length === 0 ? (
-					<p className="text-lg my-5">Aktualnie brak dostępnych testów</p>
+					<p className='text-lg my-5'>Aktualnie brak dostępnych testów</p>
 				) : (
-					<table className="table text-center w-full mt-5 max-w-5xl">
+					<table className='table text-center w-full mt-5 max-w-5xl'>
 						<thead>
 							<tr>
 								<th>check</th>
@@ -38,20 +41,20 @@ function MyTests({ tests, testsDone }) {
 								return (
 									<tr key={v4()}>
 										<td>
-											<input type="checkbox" className="checkbox" value={test.test_id} />
+											<input type='checkbox' className='checkbox' value={test.test_id} />
 										</td>
 										<td>{test.test_name}</td>
 										<td>
-											<p className="badge badge-sm">{moment(test.test_date).format("YYYY-MM-DD HH:mm")}</p>
+											<p className='badge badge-sm'>{moment(test.test_date).format('YYYY-MM-DD HH:mm')}</p>
 										</td>
 										<th>
-											{test_creator === user.id || testsDone.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
+											{test_creator === user.id || testsDone?.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
 												<Link href={`/tests/testStats?test_id=${test_id}`}>
-													<button className="btn btn-xs">stats</button>
+													<button className='btn btn-xs'>stats</button>
 												</Link>
 											) : (
 												<Link href={`/tests/solve/${test.test_code}`}>
-													<button className="btn btn-xs">join</button>
+													<button className='btn btn-xs'>join</button>
 												</Link>
 											)}
 										</th>
@@ -66,4 +69,4 @@ function MyTests({ tests, testsDone }) {
 	);
 }
 
-export default MyTests
+export default MyTests;

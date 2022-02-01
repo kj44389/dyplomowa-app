@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactPlayer from 'react-player';
 
-const Answer = ({ answer, index }) => {
-	const { answer_id, answer_name, answer_type, answer_addon_src } = answer;
+const Answer = ({ answer, index, disabled, picked, onClick }) => {
+	const { answer_id, question_id, answer_name, answer_type, answer_addon_src } = answer;
 	const renderTypeSwitch = () => {
 		switch (answer_type) {
 			case 'with_audio':
@@ -25,7 +25,7 @@ const Answer = ({ answer, index }) => {
 				<div className='flex justify-center items-center text-md text-white-500 w-8 h-8 p-4 m-2 bg-gray-800/30 rounded-md cursor-pointer'>{index + 1}</div>
 				<div className='flex flex-row md:items-end md:justify-center'>
 					<label className='label '>
-						<input type='checkbox' className='checkbox w-6 h-6' />
+						<input type='checkbox' className='checkbox w-6 h-6' defaultChecked={picked} disabled={disabled} onClick={(e) => onClick(question_id, answer_id)} />
 					</label>
 				</div>
 			</>

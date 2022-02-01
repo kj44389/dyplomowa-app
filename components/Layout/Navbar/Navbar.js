@@ -8,7 +8,7 @@ function Navbar() {
 	const user = data?.user;
 
 	return (
-		<nav className="navbar w-full max-w-5xl mx-auto flex justify-between items-center shadow-lg h-14 pl-4 font-normal text-sm bg-gray-600">
+		<nav className='navbar w-full max-w-5xl mx-auto flex justify-between items-center shadow-lg h-14 pl-4 font-normal text-sm bg-gray-600'>
 			{/* LogoType */}
 			<div className='flex items-center  h-full w-1/2'>
 				<h1 className='w-auto cursor-pointer font-serif'>
@@ -23,7 +23,7 @@ function Navbar() {
 							<NavPill text={'Moje testy'} path={'/tests/show'} />
 						</>
 					)}
-					<NavPill text={'Dołącz'} path={'/tests/solve'} />
+					<NavPill text={'Dołącz'} path={'/tests/solve/'} />
 				</ul>
 			</div>
 			{/* account info */}

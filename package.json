@@ -25,6 +25,7 @@
         "react-player": "^2.9.0",
         "serverless-mysql": "^1.5.4",
         "slugify": "^1.6.4",
+        "swr": "^1.2.0",
         "uuid": "^8.3.2"
     },
     "devDependencies": {

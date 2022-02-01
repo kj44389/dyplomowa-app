@@ -12,30 +12,18 @@ export const config = {
 };
 
 export default async (req, res) => {
-<<<<<<< Updated upstream
-	const timestamp = moment().format('DD-MM-YYYY');
-	// console.log(req);
-	let type = '';
-=======
 	const timestamp = moment().format("DD-MM-YYYY");
 
 	let type = "";
->>>>>>> Stashed changes
 
 	const data = await new Promise((resolve, reject) => {
 		const form = formidable({
 			multiples: false,
 			uploadDir: `./public/static/uploads`,
 		});
-<<<<<<< Updated upstream
-		form.on('fileBegin', function (name, file) {
-			console.log(file.mimetype);
-			if (file.mimetype.split('/')[0] === 'image') {
-=======
 		form.on("fileBegin", function (name, file) {
 
 			if (file.mimetype.split("/")[0] === "image") {
->>>>>>> Stashed changes
 				fs.mkdir(`./public/static/uploads/images/${timestamp}`, { recursive: true }, (err) => {
 					return console.log('error', err);
 				});
@@ -55,11 +43,6 @@ export default async (req, res) => {
 		});
 	});
 
-<<<<<<< Updated upstream
-	console.log(data.files, type);
-	res.json({ data: data, filepath: data.files[`${type}`].filepath.replace('public\\', '') });
-=======
 
 	res.json({ data: data, filepath: data.files[`${type}`].filepath.replace("public\\", "") });
->>>>>>> Stashed changes
 };
