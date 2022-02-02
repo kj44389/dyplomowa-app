@@ -70,7 +70,7 @@ function NewTest() {
 	}
 
 	return (
-		<div className='flex flex-col flex-1 justify-center items-center md:p-5'>
+		<div className='flex flex-col flex-1 justify-center items-center pt-5 md:p-5'>
 			<div className='w-full max-w-sm md:max-w-[600px] p-5 md:p-10 card bg-base-200'>
 				<h2 className='text-2xl'>Nowy test</h2>
 				{/* test name */}

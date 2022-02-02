@@ -1,54 +1,88 @@
 import Layout from 'components/Layout/Layout';
-import MyTests from 'components/Layout/LoggedContent/MyTests/MyTests';
 import _fetch from 'isomorphic-fetch';
-import { useSession } from 'next-auth/react';
+import moment from 'moment';
+import { getSession } from 'next-auth/react';
 import { absoluteUrlPrefix } from 'next.config';
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { v4 } from 'uuid';
 
-function show() {
-	const [loading, setLoading] = useState(true);
-	const [testData, setTestData] = useState([]);
-	const [testDoneData, setTestDoneData] = useState([]);
-	const [testsIds, setTestsIds] = useState([]);
-	const [testsFound, setTestsFound] = useState(0);
-	const { data: user, status } = useSession();
+export async function getServerSideProps(context) {
+	const session = await getSession(context);
+	let testsFetch = await _fetch(`${absoluteUrlPrefix}/api/tests/${session.email}/`, {
+		method: 'GET',
+	});
+	let fetchedData = await testsFetch.json();
+	let testsIds = [];
+	for (let i of fetchedData) {
+		testsIds.push(i.test_id);
+	}
 
-	useEffect(() => {
-		if (status === 'loading') return;
-		if (status === 'unauthenticated') return;
-		const testsFetch = _fetch(`${absoluteUrlPrefix}/api/tests/${user.email}/`, {
-			method: 'GET',
-		})
-			.then((res) => res.json())
-			.then((data) => {
-				setTestsFound(data.length);
-				data.forEach((value) => {
-					setTestsIds((prev) => [...prev, value.test_id]);
-				});
-			});
-	}, [status]);
+	const testsDataFetch = await _fetch(`${absoluteUrlPrefix}/api/tests?by=test_id&tests=${JSON.stringify(testsIds)}`, {
+		method: 'GET',
+	});
+	let testData = await testsDataFetch.json();
+	const testsDoneFetch = await _fetch(`${absoluteUrlPrefix}/api/test/done/one/${JSON.stringify(testsIds)}/${session.email}`, { method: 'GET' });
+	let testDoneData = await testsDoneFetch.json();
 
-	useEffect(() => {
-		if (testsIds.length !== testsFound || testsIds.length === 0) return;
-		const testsDataFetch = _fetch(`${absoluteUrlPrefix}/api/tests?by=test_id&tests=${JSON.stringify(testsIds)}`, {
-			method: 'GET',
-		})
-			.then((res) => res.json())
-			.then((data) => setTestData(data.data));
-	}, [testsIds]);
+	return {
+		props: {
+			testData,
+			testDoneData,
+			session,
+		},
+	};
+}
 
-	useEffect(() => {
-		if (!testData || !user) return;
-		const testsDoneDataFetch = _fetch(`${absoluteUrlPrefix}/api/test/done/one/${JSON.stringify(testsIds)}/${user.email}`, { method: 'GET' })
-			.then((res) => res.json())
-			.then((data) => {
-				console.log(data);
-				data.status === 404 ? setTestDoneData([]) : setTestDoneData(data.data);
-			});
-		setLoading(false);
-	}, [testData]);
-	console.log(testData, testDoneData);
-	return <Layout>{!loading && <MyTests tests={testData} testsDone={testDoneData} />}</Layout>;
+function show({ testData, testDoneData, session }) {
+	return (
+		<Layout>
+			<div className='flex justify-center overflow-x-auto'>
+				{testData?.data.length === 0 ? (
+					<p className='text-lg my-5'>Aktualnie brak dostępnych testów</p>
+				) : (
+					<table className='table text-center w-full mt-5 max-w-5xl'>
+						<thead>
+							<tr>
+								<th>check</th>
+								<th>Test Name</th>
+								<th>Test Date</th>
+
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{testData?.data.map((test) => {
+								const { test_id, test_name, test_date, test_creator } = test;
+								return (
+									<tr key={v4()}>
+										<td>
+											<input type='checkbox' className='checkbox' value={test.test_id} />
+										</td>
+										<td>{test.test_name}</td>
+										<td>
+											<p className='badge badge-sm'>{moment(test.test_date).format('YYYY-MM-DD HH:mm')}</p>
+										</td>
+										<th>
+											{test_creator === session?.id || testDoneData?.data.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
+												<Link href={`/tests/testStats?test_id=${test_id}`}>
+													<button className='btn btn-xs'>stats</button>
+												</Link>
+											) : (
+												<Link href={`/tests/solve/${test.test_code}`}>
+													<button className='btn btn-xs'>join</button>
+												</Link>
+											)}
+										</th>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+				)}
+			</div>
+		</Layout>
+	);
 }
 
 export default show;
+//			{/* <MyTests tests={testData} testsDone={testDoneData} /> */}
