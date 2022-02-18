@@ -38,9 +38,9 @@ function show({ testData, testDoneData, session }) {
 		<Layout>
 			<div className='flex justify-center overflow-x-auto'>
 				{testData?.data.length === 0 ? (
-					<p className='text-lg my-5'>Aktualnie brak dostępnych testów</p>
+					<p className='my-5 text-lg'>Aktualnie brak dostępnych testów</p>
 				) : (
-					<table className='table text-center w-full mt-5 max-w-5xl'>
+					<table className='mt-5 table w-full max-w-5xl text-center'>
 						<thead>
 							<tr>
 								<th>check</th>
@@ -64,11 +64,11 @@ function show({ testData, testDoneData, session }) {
 										</td>
 										<th>
 											{test_creator === session?.id || testDoneData?.data.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
-												<Link href={`/tests/testStats?test_id=${test_id}`}>
+												<Link href={`/test/${test_id}/testStats`}>
 													<button className='btn btn-xs'>stats</button>
 												</Link>
 											) : (
-												<Link href={`/tests/solve/${test.test_code}`}>
+												<Link href={`/test/solve/${test.test_id}`}>
 													<button className='btn btn-xs'>join</button>
 												</Link>
 											)}
