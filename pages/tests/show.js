@@ -26,19 +26,19 @@ export async function getServerSideProps(context) {
 
 	return {
 		props: {
-			testData,
-			testDoneData,
-			session,
+			testData: testData,
+			testDoneData: testDoneData,
+			userId: session.id,
 		},
 	};
 }
 
-function show({ testData, testDoneData, session }) {
+function show({ testData, testDoneData, userId }) {
 	return (
 		<Layout>
 			<div className='flex justify-center overflow-x-auto'>
 				{testData?.data.length === 0 ? (
-					<p className='my-5 text-lg'>Aktualnie brak dostępnych testów</p>
+					<p className='my-5 text-lg'>Tests not found</p>
 				) : (
 					<table className='mt-5 table w-full max-w-5xl text-center'>
 						<thead>
@@ -63,7 +63,7 @@ function show({ testData, testDoneData, session }) {
 											<p className='badge badge-sm'>{moment(test.test_date).format('YYYY-MM-DD HH:mm')}</p>
 										</td>
 										<th>
-											{test_creator === session?.id || testDoneData?.data.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
+											{test_creator === userId || testDoneData?.data.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
 												<Link href={`/test/${test_id}/testStats`}>
 													<button className='btn btn-xs'>stats</button>
 												</Link>

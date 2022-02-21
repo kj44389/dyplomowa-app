@@ -52,7 +52,7 @@ function Navbar() {
 						(navOpen ? '  animate-slideIn ' : ' animate-slideOut ')
 					}>
 					<ul className='flex flex-col space-y-3 p-6 text-lg font-normal tracking-wider transition-all md:mt-0 md:flex-row md:space-x-8 md:font-medium'>
-						<a className='min-w-xs w-full rounded-md text-gray-100  transition-colors hover:bg-gray-800/20' href={'/tests/newTest'}>
+						<a className='min-w-xs w-full rounded-md text-gray-100  transition-colors hover:bg-gray-800/20' href={'/test/newTest'}>
 							<li className='flex items-center justify-end space-x-2 p-4'>
 								<span>Nowy Test</span>
 								<PlusSmIcon className='w-6' />
@@ -64,7 +64,7 @@ function Navbar() {
 								<ClipboardListIcon className='w-5' />
 							</li>
 						</a>
-						<a className='min-w-xs w-full rounded-md text-gray-100 transition-colors hover:bg-gray-800/20' href={'/tests/solve/'}>
+						<a className='min-w-xs w-full rounded-md text-gray-100 transition-colors hover:bg-gray-800/20' href={'/test/solve/'}>
 							<li className='flex items-center justify-end space-x-2 p-4'>
 								<span>Dołącz do Testu</span>
 								<PlayIcon className='w-5' />
