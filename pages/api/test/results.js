@@ -122,6 +122,7 @@ export default async (req, res) => {
 			}
 			return res.status(200).json({ status: 200, points_scored: pointsScored, points_total: pointsTotal, msg: `test inserted successfully` });
 		}
+		return res.status(200).json({ status: 200, points_scored: pointsScored, points_total: pointsTotal, msg: `test inserted successfully` });
 	} catch (err) {
 		return res.status(err.status || 500).json({ status: err.status || 500, message: err.message });
 	}

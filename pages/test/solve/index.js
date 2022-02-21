@@ -8,9 +8,11 @@ import CodeForm from 'components/Layout/LoggedContent/SolveTest/CodeForm/CodeFor
 import moment from 'moment';
 import ErrorPage from 'components/Layout/Error/ErrorPage';
 import { useRouter } from 'next/router';
+import NameEmailForm from 'components/Layout/LoggedContent/SolveTest/CodeNameForm/NameEmailForm';
 
 export async function getServerSideProps(context) {
 	const session = await getSession(context);
+	if (!session) return { props: { tests: null } };
 	let tests = [];
 	const testsIds = await _fetch(`${absoluteUrlPrefix}/api/tests/${session.email}`, { method: 'GET' })
 		.then((res) => {
@@ -40,6 +42,11 @@ const solve = ({ tests }) => {
 
 	const [testData, setTestData] = useState([]);
 	const [testFound, setTestFound] = useState(false);
+	const [emailNameForm, setEmailNameForm] = useState({
+		name: '',
+		surname: '',
+		email: '',
+	});
 
 	const testCrawler = () => {
 		for (let i of tests[0]) {
@@ -54,10 +61,25 @@ const solve = ({ tests }) => {
 		router.push(`/test/solve/${testData?.test_id}`);
 	};
 
+	const handleRedirectWithFormData = async () => {
+		const testId = await _fetch(`/api/tests?by=test_code&code=${formTestCode}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.status !== 200) return null;
+				return data.data[0].test_id;
+			});
+		if (!testId) router.push(`/test/solve`);
+		router.push(`/test/solve/${testId}?name=${emailNameForm?.name}&surname=${emailNameForm?.surname}&email=${JSON.stringify(emailNameForm?.email)}`);
+	};
+
 	return (
 		<Layout>
 			{!testFound ? (
-				<CodeForm key={`codeFormKey`} setTestCode={setFormTestCode} crawler={testCrawler()} />
+				tests ? (
+					<CodeForm key={`codeFormKey`} setTestCode={setFormTestCode} crawler={testCrawler()} />
+				) : (
+					<NameEmailForm setEmailNameForm={setEmailNameForm} setTestCode={setFormTestCode} emailNameForm={emailNameForm} formSubmit={handleRedirectWithFormData} />
+				)
 			) : moment(testData.test_date).diff(moment()) > 0 ? (
 				handleRedirect()
 			) : (

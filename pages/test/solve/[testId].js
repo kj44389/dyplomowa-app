@@ -8,7 +8,7 @@ import Timer from 'components/Layout/LoggedContent/SolveTest/Test/Timer';
 import _fetch from 'isomorphic-fetch';
 import { getSession, useSession } from 'next-auth/react';
 import { absoluteUrlPrefix } from 'next.config';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 
 const getShuffledArr = (arr) => {
@@ -23,6 +23,7 @@ export async function getServerSideProps(context) {
 	const session = await getSession(context);
 
 	const testId = context.query.testId;
+	console.log(context.query);
 	const testData = await _fetch(`${absoluteUrlPrefix}/api/test/${testId}`, { method: 'GET' }).then((res) => {
 		return res.json();
 	});
@@ -53,15 +54,15 @@ export async function getServerSideProps(context) {
 			testQuestions: testQuestions,
 			fetchedIds: questionsIds,
 			testAnswers: testAnswers,
-			fullName: session?.name,
-			Email: session?.email,
+			fullName: session?.name || `${context.query.name} ${context.query.surname}`,
+			Email: session?.email || `${JSON.parse(context.query.email)}`,
 		},
 	};
 }
 
 const solve = ({ testData, testQuestions, testAnswers, fetchedIds, fullName, Email }) => {
 	const { data: user, status } = useSession();
-
+	console.log(fullName, Email);
 	const [questions, setQuestions] = useState(testQuestions);
 	const [questionsIds, setQuestionIds] = useState(fetchedIds);
 	const [question, setQuestion] = useState({});
