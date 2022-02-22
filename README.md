@@ -19,7 +19,7 @@ This project is a site for online knowledge tests where users can create, edit, 
 ![dashboard pc](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/Dashboard_PC.png?raw=true)
 
 ### Tests list page
-![Tests list](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/testsList.png?raw=true)
+![Tests list](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestsList.png?raw=true)
 
 ### Form to provide test code for logged users
 ![Form to provide test code for logged users](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestCodeFormForUsers.png?raw=true)
