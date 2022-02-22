@@ -38,7 +38,7 @@ function Layout({ children }) {
 			{/* sidebar */}
 
 			{/* content */}
-			<main className='max-w-3xl mx-auto'>
+			<main className='mx-auto max-w-3xl'>
 				{children}
 				{/* foother */}
 			</main>
