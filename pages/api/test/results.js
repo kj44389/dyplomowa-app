@@ -34,9 +34,6 @@ export default async (req, res) => {
 		return answer.answer_correct === 1;
 	});
 
-	// test_done - { done_id, test_id, user_id, finished_at, points_scored, points_total, passed }
-	// test_done_answers - { id, done_id, answer_id, picked }
-
 	for (const question of questions) {
 		const { question_id, question_score } = question;
 		pointsTotal += question_score;
@@ -62,18 +59,12 @@ export default async (req, res) => {
 		pointsScored += questionScore;
 	}
 
-	// test done insert
-	// test_done - { done_id, test_id, user_id, finished_at, points_scored, points_total, passed }
-
 	try {
 		const finished_at = moment().format();
 		const passed = pointsScored >= pointsTotal / 2;
 		let query = 'INSERT INTO `test_done`(`done_id`, `test_id`, `user_email`,`user_full_name`, `finished_at`, `points_scored`, `points_total`, `passed`) VALUES (?,?,?,?,?,?,?,?)';
 		let results = sql_query(query, [done_id, test_id, user_email, user_full_name, finished_at, pointsScored, pointsTotal, passed]);
 		if (!results) throw new Exception(500, "Couldn't insert test done'");
-		// answers to test_done inserting
-		// test_done_answers - { id, done_id, answer_id, picked }
-		//INSERT INTO `test_done_answers`(`id`, `done_id`, `answer_id`, `picked`) VALUES (?,?,?,?)
 		const done_answer_id = v4();
 		query = 'INSERT INTO `test_done_answers`(`id`, `done_id`, `answer_id`, `picked`) VALUES ?';
 		results = sql_query(query, [arrayOfAnswers]);
@@ -126,11 +117,4 @@ export default async (req, res) => {
 	} catch (err) {
 		return res.status(err.status || 500).json({ status: err.status || 500, message: err.message });
 	}
-
-	//userMetaData
-	//get user meta data
-
-	// insert if not exists
-
-	// update if exists
 };

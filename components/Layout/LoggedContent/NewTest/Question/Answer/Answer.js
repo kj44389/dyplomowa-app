@@ -9,15 +9,19 @@ function Answer({ props }) {
 	const [answer, setAnswer] = useState(props.answer);
 	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const index = props.index;
-	const reader = new FileReader();
+	let reader;
+
+	useEffect(() => {
+		reader = window.FileReader;
+	}, []);
 
 	useEffect(() => {
 		props.setanswers(answer);
 	}, [answer]);
 
-	useEffect(() => {
-		setAnswer({ ...answer, answer_addon_src: '', answer_addon: '' });
-	}, [answer.answer_type]);
+	// useEffect(() => {
+	// 	setAnswer({ ...answer, answer_addon_src: '', answer_addon: '' });
+	// }, [answer.answer_type]);
 
 	// FILE UPLOAD
 	useEffect(() => {
@@ -49,9 +53,7 @@ function Answer({ props }) {
 	}, [answer.answer_addon]);
 
 	useEffect(() => {
-
 		setUploadingStatus('done');
-
 	}, [answer.answer_addon_src]);
 
 	async function handleAddFile(form) {
@@ -62,7 +64,6 @@ function Answer({ props }) {
 		let { data, filepath } = await res.json();
 		filepath = filepath.replaceAll('\\', '/');
 		handleAnswerChange('answer_addon_src', filepath);
-
 	}
 
 	async function handleAnswerChange(what_changing, value) {
@@ -75,41 +76,46 @@ function Answer({ props }) {
 			case 'text':
 				return;
 			case 'with_audio':
-				return <Answer_addons props={{ type: 'audio', handleAnswerChange: handleAnswerChange, value: '' }} />;
+				return <Answer_addons props={{ type: 'audio', handleAnswerChange: handleAnswerChange, value: answer.answer_addon_src || '' }} />;
 			case 'with_image':
-				return <Answer_addons props={{ type: 'image', handleAnswerChange: handleAnswerChange, value: '' }} />;
+				return <Answer_addons props={{ type: 'image', handleAnswerChange: handleAnswerChange, value: answer.answer_addon_src || '' }} />;
 			case 'with_youtube':
-				return <Answer_addons props={{ type: 'youtube', handleAnswerChange: handleAnswerChange, value: '' }} />;
+				return <Answer_addons props={{ type: 'youtube', handleAnswerChange: handleAnswerChange, value: answer.answer_addon_src || '' }} />;
 		}
 	}
 
 	return (
 		<div className='space-y-6'>
 			<span className='flex flex-row items-center'>
-				<span className='text-xs btn btn-sm rounder-full bg-gray-600 cursor-default'>ANSWER {answer.id}</span>
-				<span className='h-[2px] w-full bg-gray-600/30 ml-4'></span>
+				<span className='btn btn-sm rounder-full cursor-default bg-gray-600 text-xs'>ANSWER {answer.id}</span>
+				<span className='ml-4 h-[2px] w-full bg-gray-600/30'></span>
 			</span>
 
-			<div className='form-control flex  flex-col md:flex-row w-full space-y-4 md:space-y-0md:space-x-2'>
-				<div className='flex flex-col w-full md:w-1/2'>
+			<div className='form-control md:space-y-0md:space-x-2  flex w-full flex-col space-y-4 md:flex-row'>
+				<div className='flex w-full flex-col md:w-1/2'>
 					<label className='label'>
 						<span className='label-text'>Type:</span>
 					</label>
-					<select defaultValue={'text'} className='select select-bordered w-full' onChange={(e) => handleAnswerChange('answer_type', e.target.value)}>
+					<select defaultValue={answer.answer_type || 'text'} className='select select-bordered w-full' onChange={(e) => handleAnswerChange('answer_type', e.target.value)}>
 						<option value='text'>Sam tekst</option>
 						<option value='with_audio'>Z dźwiękiem</option>
 						<option value='with_image'>Z obrazkiem</option>
 						<option value='with_youtube'>Z Filmikiem z YT</option>
 					</select>
 				</div>
-				<div className='flex flex-row w-full md:items-end md:justify-center md:w-1/2'>
+				<div className='flex w-full flex-row md:w-1/2 md:items-end md:justify-center'>
 					<label className='label space-x-3'>
-						<input type='checkbox' className='checkbox checkbox-lg' onChange={(e) => handleAnswerChange('correct', e.target.value)} />
+						<input
+							type='checkbox'
+							className='checkbox checkbox-lg'
+							defaultChecked={answer.answer_correct || false}
+							onChange={(e) => handleAnswerChange('correct', e.target.value)}
+						/>
 						<span className='label-text'>Correct Answer</span>
 					</label>
 				</div>
 			</div>
-			<div className='flex justify-center items-center'>
+			<div className='flex items-center justify-center'>
 				{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && uploadingStatus !== 'pending' && <img src={`/${answer.answer_addon_src}`} className='max-w-sm' />}
 				{answer.answer_addon_src !== '' && answer.answer_type == 'with_audio' && uploadingStatus !== 'pending' && (
 					<ReactPlayer url={`/${answer.answer_addon_src}`} height={70} controls />
@@ -121,7 +127,11 @@ function Answer({ props }) {
 				<label className='label'>
 					<span className='label-text'>Answer Name:</span>
 				</label>
-				<textarea className='textarea h-12' placeholder={`Answer ${index + 1}`} onBlur={(e) => handleAnswerChange('answer_name', e.target.value)}></textarea>
+				<textarea
+					className='textarea h-12'
+					defaultValue={answer.answer_name || ''}
+					placeholder={`Answer ${index + 1}`}
+					onBlur={(e) => handleAnswerChange('answer_name', e.target.value)}></textarea>
 			</div>
 		</div>
 	);

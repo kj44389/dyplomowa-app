@@ -23,10 +23,11 @@ function Answer_addons({ props }) {
 						<input
 							type='url'
 							placeholder='https://www.youtube.com/watch?v=E8gmARGvPlI'
+							defaultValue={props.value}
 							ref={youtubeUrl}
-							className='text-gray-400 px-2 py-2 w-full text-base rounded-lg'></input>
+							className='w-full rounded-lg px-2 py-2 text-base text-gray-400'></input>
 						<button
-							className='btn btn-sm self-center outline outline-green-500 outline-2'
+							className='btn btn-sm self-center outline outline-2 outline-green-500'
 							onClick={(e) => {
 								setyoutubePicked(true);
 							}}>
@@ -37,7 +38,7 @@ function Answer_addons({ props }) {
 				{(props.type === 'audio' || props.type === 'image') && (
 					<input
 						type='file'
-						className='text-gray-400 file:rounded-xl file:border-2 file:border-primarygreen file:border-solid file:bg-transparent file:text-gray-300 hover:file:bg-gray-800/30 file:py-2 file:px-4 file:mr-4 file:text-sm file:font-semibold'
+						className='file:border-primarygreen text-gray-400 file:mr-4 file:rounded-xl file:border-2 file:border-solid file:bg-transparent file:py-2 file:px-4 file:text-sm file:font-semibold file:text-gray-300 hover:file:bg-gray-800/30'
 						onChange={(e) => {
 							props.handleAnswerChange('answer_addon', e.target.files[0]);
 						}}></input>

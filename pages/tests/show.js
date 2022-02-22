@@ -64,9 +64,14 @@ function show({ testData, testDoneData, userId }) {
 										</td>
 										<th>
 											{test_creator === userId || testDoneData?.data.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
-												<Link href={`/test/${test_id}/testStats`}>
-													<button className='btn btn-xs'>stats</button>
-												</Link>
+												<>
+													<Link href={`/test/${test_id}/testStats`}>
+														<button className='btn btn-xs'>stats</button>
+													</Link>
+													<Link href={`/test/newTest?edit=true&test_id=${test_id}`}>
+														<button className='btn btn-xs'>edit</button>
+													</Link>
+												</>
 											) : (
 												<Link href={`/test/solve/${test.test_id}`}>
 													<button className='btn btn-xs'>join</button>

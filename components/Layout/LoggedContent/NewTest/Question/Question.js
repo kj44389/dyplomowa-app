@@ -10,10 +10,15 @@ function Question({ props }) {
 	const [question, setquestion] = useState(props.question);
 	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const answers = props.answers;
-	const reader = new FileReader();
+	let reader;
+
+	useEffect(() => {
+		reader = window.FileReader;
+	}, []);
 
 	//update questions state
 	useEffect(() => {
+		console.log('update');
 		props.setquestions(question);
 	}, [question]);
 
@@ -25,6 +30,7 @@ function Question({ props }) {
 
 		if (question.question_type === 'with_youtube') {
 			handleQuestionChange('question_addon_src', question.question_addon);
+			console.log(question.question_addon, question.question_addon_src);
 		} else {
 			reader.readAsDataURL(question.question_addon);
 
@@ -43,16 +49,18 @@ function Question({ props }) {
 				};
 			}
 		}
+		// console.log('question_addon', question.question_addon, question.question_addon_src, question);
 	}, [question.question_addon]);
 
-	// reseting src after type change
-	useEffect(() => {
-		setquestion({ ...question, question_addon_src: '', question_addon: '' });
-	}, [question.question_type]);
+	// // reseting src after type change
+	// useEffect(() => {
+	// 	setquestion({ ...question, question_addon_src: '', question_addon: '' });
+	// }, [question.question_type]);
 
 	//marking upload as done
 	useEffect(() => {
 		setUploadingStatus('done');
+		handleQuestionChange('question_addon', null);
 	}, [question.question_addon_src]);
 
 	// FILE UPLOAD execution
@@ -73,11 +81,11 @@ function Question({ props }) {
 			case 'text_many':
 				return;
 			case 'with_audio':
-				return <Question_addons props={{ type: 'audio', handleQuestionChange: handleQuestionChange, value: '' }} />;
+				return <Question_addons props={{ type: 'audio', handleQuestionChange: handleQuestionChange, value: question.question_addon_src || '' }} />;
 			case 'with_image':
-				return <Question_addons props={{ type: 'image', handleQuestionChange: handleQuestionChange, value: '' }} />;
+				return <Question_addons props={{ type: 'image', handleQuestionChange: handleQuestionChange, value: question.question_addon_src || '' }} />;
 			case 'with_youtube':
-				return <Question_addons props={{ type: 'youtube', handleQuestionChange: handleQuestionChange, value: '' }} />;
+				return <Question_addons props={{ type: 'youtube', handleQuestionChange: handleQuestionChange, value: question.question_addon_src || '' }} />;
 		}
 	}
 	//helper function
@@ -87,15 +95,15 @@ function Question({ props }) {
 	}
 
 	return (
-		<div className='indicator flex flex-col w-full h-auto space-y-6 mt-16 mb-12'>
-			<div className='indicator-item indicator-top-left indicator-start rounded-bl-none rounded-tl-none badge bg-green-500 badge-md translate-x-[-25%] ml-10 md:ml-0'>
+		<div className='indicator mt-16 mb-12 flex h-auto w-full flex-col space-y-6'>
+			<div className='indicator-item indicator-top-left indicator-start badge badge-md ml-10 translate-x-[-25%] rounded-bl-none rounded-tl-none bg-green-500 md:ml-0'>
 				Question {question.id}
 			</div>
 			<div className='form-control'>
 				<label className='label'>
 					<span className='label-text'>Question Type</span>
 				</label>
-				<select onChange={(e) => handleQuestionChange('question_type', e.target.value)} defaultValue='text_one' className='select select-bordered w-full '>
+				<select onChange={(e) => handleQuestionChange('question_type', e.target.value)} defaultValue={question.question_type || 'text_one'} className='select select-bordered w-full '>
 					{/* <select onChange={(e) => QuestionChange(question.question_id, 'question_type', e.target.value)} defaultValue='text_one' className='select select-bordered w-full '> */}
 					<option value='text_one'>Pytanie jednokrotnego wyboru</option>
 					<option value='text_many'>Pytanie wielokrotnego wyboru</option>
@@ -105,7 +113,7 @@ function Question({ props }) {
 				</select>
 			</div>
 
-			<div className='flex justify-center items-center'>
+			<div className='flex items-center justify-center'>
 				{question.question_addon_src !== '' && uploadingStatus !== 'pending' && question.question_type == 'with_image' && (
 					<img src={`/${question.question_addon_src}`} className='max-w-sm' />
 				)}
@@ -123,25 +131,27 @@ function Question({ props }) {
 				<textarea
 					className='textarea h-24'
 					placeholder='How many people live on Earth?'
+					defaultValue={question.question_name || ''}
 					onChange={(e) => {
 						handleQuestionChange('question_name', e.target.value);
 					}}></textarea>
 			</div>
 			{/* queston time and points */}
-			<div className='form-control flex flex-col md:flex-row w-full md:space-x-2'>
-				<div className='flex flex-col w-full md:w-1/2'>
+			<div className='form-control flex w-full flex-col md:flex-row md:space-x-2'>
+				<div className='flex w-full flex-col md:w-1/2'>
 					<label className='label'>
 						<span className='label-text'>Question Time (s)</span>
 					</label>
 					<input
 						type='time'
 						className='input'
+						defaultValue={question.question_time || ''}
 						onChange={(e) => {
 							handleQuestionChange('question_time', e.target.value);
 						}}
 					/>
 				</div>
-				<div className='flex flex-col w-full md:w-1/2'>
+				<div className='flex w-full flex-col md:w-1/2'>
 					<label className='label'>
 						<span className='label-text'>Question points</span>
 					</label>
@@ -149,6 +159,7 @@ function Question({ props }) {
 						type='number'
 						placeholder={question.question_score}
 						value={question.question_score}
+						defaultValue={question.question_score || 0}
 						min={'0'}
 						className='input'
 						onChange={(e) => {
@@ -174,10 +185,10 @@ function Question({ props }) {
 				onClick={(e) => {
 					props.addAnswer(question.question_id);
 				}}
-				className='m-4 btn btn-outline btn-sm max-w-[10rem] self-center'>
+				className='btn btn-outline btn-sm m-4 max-w-[10rem] self-center'>
 				Dodaj Odpowiedź
 			</button>
-			<div className='divide border-gray-700 border-[1px]'></div>
+			<div className='divide border-[1px] border-gray-700'></div>
 		</div>
 		// </div>
 	);
