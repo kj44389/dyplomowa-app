@@ -1,3 +1,4 @@
+import { PencilAltIcon, ChartBarIcon, PlayIcon, TrashIcon, ArrowSmLeftIcon, ArrowSmRightIcon } from '@heroicons/react/outline';
 import Layout from 'components/Layout/Layout';
 import _fetch from 'isomorphic-fetch';
 import moment from 'moment';
@@ -34,55 +35,178 @@ export async function getServerSideProps(context) {
 }
 
 function show({ testData, testDoneData, userId }) {
+	const handleDeleteTest = (test_id) => {
+		// confirmation if user want to delete test
+		console.log('confirm');
+
+		// if confirmed delete test
+	};
+	const CheckIfTestDone = (test_id) => {
+		return testDoneData?.data?.findIndex((testDone) => testDone.test_id === test_id);
+	};
 	return (
 		<Layout>
 			<div className='flex justify-center overflow-x-auto'>
 				{testData?.data.length === 0 ? (
 					<p className='my-5 text-lg'>Tests not found</p>
 				) : (
-					<table className='mt-5 table w-full max-w-5xl text-center'>
-						<thead>
-							<tr>
-								<th>check</th>
-								<th>Test Name</th>
-								<th>Test Date</th>
+					<div className='space-y-5 py-6'>
+						{/* tests created */}
+						<div className='flex items-center justify-center'>
+							<ArrowSmLeftIcon className='mr-4 h-6 w-6 translate-y-1/2 rounded-md bg-gray-800/50' />
+							<div className='flex-col'>
+								<h2 className='my-2 text-lg font-bold tracking-wider'>Created Tests:</h2>
+								{testData?.data
+									?.filter((test) => test.test_creator === userId)
+									?.map((test) => {
+										const { test_id, test_name, test_date, test_creator } = test;
+										return (
+											<div key={v4()}>
+												<div className='flex w-72 flex-col rounded-md bg-gray-800/30 p-8'>
+													<h3>
+														<span className='font-medium'>Test Name</span>: {test_name}
+													</h3>
+													<span className='mb-2 text-xs'>
+														<span className='font-medium'>Due</span>: {moment(test_date).format('YYYY-MM-DD HH:mm')}
+													</span>
+													<span className=''>
+														<span className='font-medium'>Participants</span>: {'4'}
+													</span>
+													<div className='mt-4 flex justify-between space-x-1 text-sm'>
+														<div className='space-x-1'>
+															<div className='tooltip tooltip-bottom' data-tip='edit'>
+																<Link href={`/test/newTest?edit=true&test_id=${test_id}`}>
+																	<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
+																		<PencilAltIcon className='h-5 w-5 hover:text-green-500' />
+																	</button>
+																</Link>
+															</div>
+															<div className='tooltip tooltip-bottom' data-tip='stats'>
+																<Link href={`/test/${test_id}/testStats`}>
+																	<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
+																		<ChartBarIcon className='h-5 w-5 ' />
+																	</button>
+																</Link>
+															</div>
+														</div>
+														<div className='tooltip tooltip-bottom' data-tip='delete'>
+															{/* <Link href={`/test/${test_id}/testStats`}> */}
+															<button
+																className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 text-red-300 transition-colors hover:bg-gray-800 hover:text-red-500'
+																onClick={() => handleDeleteTest(test_id)}>
+																<TrashIcon className='h-5 w-5 ' />
+															</button>
+															{/* </Link> */}
+														</div>
+													</div>
+												</div>
+											</div>
+										);
+									})}
+							</div>
+							<ArrowSmRightIcon className='ml-4 h-6 w-6 translate-y-1/2 rounded-md bg-gray-800/50' />
+						</div>
+						{/* tests to join */}
+						<div className='flex items-center justify-center'>
+							<ArrowSmLeftIcon className='mr-4 h-6 w-6 translate-y-1/2 rounded-md bg-gray-800/50' />
+							<div className='flex-col'>
+								<h2 className='my-2 text-lg font-bold tracking-wider'>Available Tests:</h2>
+								{testData?.data
+									?.filter((test) => moment(test.test_date) > moment() && test.test_creator !== userId)
+									?.map((test) => {
+										const { test_id, test_name, test_date, test_creator } = test;
+										return (
+											<div key={v4()}>
+												<div className='flex w-72 flex-col rounded-md bg-gray-800/30 p-8'>
+													<h3>
+														<span className='font-medium'>Test Name</span>: {test_name}
+													</h3>
+													<span className='mb-2 text-xs'>
+														<span className='font-medium'>Due</span>: {moment(test_date).format('YYYY-MM-DD HH:mm')}
+													</span>
 
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							{testData?.data.map((test) => {
-								const { test_id, test_name, test_date, test_creator } = test;
-								return (
-									<tr key={v4()}>
-										<td>
-											<input type='checkbox' className='checkbox' value={test.test_id} />
-										</td>
-										<td>{test.test_name}</td>
-										<td>
-											<p className='badge badge-sm'>{moment(test.test_date).format('YYYY-MM-DD HH:mm')}</p>
-										</td>
-										<th>
-											{test_creator === userId || testDoneData?.data?.findIndex((testDone) => testDone.test_id === test_id) >= 0 ? (
-												<>
-													<Link href={`/test/${test_id}/testStats`}>
-														<button className='btn btn-xs'>stats</button>
-													</Link>
-													<Link href={`/test/newTest?edit=true&test_id=${test_id}`}>
-														<button className='btn btn-xs'>edit</button>
-													</Link>
-												</>
-											) : (
-												<Link href={`/test/solve/${test.test_id}`}>
-													<button className='btn btn-xs'>join</button>
-												</Link>
-											)}
-										</th>
-									</tr>
-								);
-							})}
-						</tbody>
-					</table>
+													<span className=''>
+														<span className='font-medium'>Status</span>:
+														{CheckIfTestDone(test_id) >= 0 ? (
+															<>{testDoneData?.data[CheckIfTestDone(test_id)]?.passed ? ' passed' : ' failed'}</>
+														) : (
+															<>{' not joined'}</>
+														)}
+													</span>
+
+													<div className='mt-4 flex items-center space-x-1 text-sm'>
+														{CheckIfTestDone(test_id) >= 0 ? (
+															<div className='tooltip tooltip-bottom' data-tip='stats'>
+																<Link href={`/test/${test_id}/testStats`}>
+																	<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
+																		<ChartBarIcon className='h-5 w-5 ' />
+																	</button>
+																</Link>
+															</div>
+														) : (
+															<div className='tooltip tooltip-bottom' data-tip='join'>
+																<Link href={`/test/solve/${test_id}`}>
+																	<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
+																		<PlayIcon className='h-5 w-5 ' />
+																	</button>
+																</Link>
+															</div>
+														)}
+													</div>
+												</div>
+											</div>
+										);
+									})}
+							</div>
+							<ArrowSmRightIcon className='ml-4 h-6 w-6 translate-y-1/2 rounded-md bg-gray-800/50' />
+						</div>
+
+						{/* tests with stats (user not a creator) */}
+						<div className='flex items-center justify-center'>
+							<ArrowSmLeftIcon className='mr-4 h-6 w-6 translate-y-1/2 rounded-md bg-gray-800/50' />
+							<div className='flex-col'>
+								<h2 className='my-2 text-lg font-bold tracking-wider'>Archive Tests:</h2>
+
+								{testData?.data
+									?.filter((test) => moment(test.test_date) < moment() && test.test_creator !== userId)
+									?.map((test) => {
+										const { test_id, test_name, test_date, test_creator } = test;
+										return (
+											<div key={v4()}>
+												<div className='flex w-72 flex-col rounded-md bg-gray-800/30 p-8'>
+													<h3>
+														<span className='font-medium'>Test Name</span>: {test_name}
+													</h3>
+													<span className='mb-2 text-xs'>
+														<span className='font-medium'>Due</span>: {moment(test_date).format('YYYY-MM-DD HH:mm')}
+													</span>
+													<span className=''>
+														<span className='font-medium'>Status</span>:
+														{CheckIfTestDone(test_id) >= 0 ? (
+															<>{testDoneData?.data[CheckIfTestDone(test_id)]?.passed ? ' passed' : ' failed'}</>
+														) : (
+															<>{' not joined'}</>
+														)}
+													</span>
+													<div className='mt-4 flex items-center space-x-1 text-sm'>
+														{CheckIfTestDone(test_id) >= 0 && (
+															<div className='tooltip tooltip-bottom' data-tip='stats'>
+																<Link href={`/test/${test_id}/testStats`}>
+																	<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
+																		<ChartBarIcon className='h-5 w-5 ' />
+																	</button>
+																</Link>
+															</div>
+														)}
+													</div>
+												</div>
+											</div>
+										);
+									})}
+							</div>
+							<ArrowSmRightIcon className='ml-4 h-6 w-6 translate-y-1/2 rounded-md bg-gray-800/50' />
+						</div>
+					</div>
 				)}
 			</div>
 		</Layout>
@@ -90,4 +214,3 @@ function show({ testData, testDoneData, userId }) {
 }
 
 export default show;
-//			{/* <MyTests tests={testData} testsDone={testDoneData} /> */}

@@ -2,7 +2,7 @@ import React from 'react';
 
 const CodeForm = ({ setTestCode, crawler }) => {
 	return (
-		<div className='card bg-base-200 mx-auto w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>
+		<div className='card bg-base-200 mx-auto w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>		
 			<h2 className='text-2xl'>TEST CODE</h2>
 			{/* test name */}
 			<div className='form-control'>

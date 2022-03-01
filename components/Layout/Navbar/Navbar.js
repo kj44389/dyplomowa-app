@@ -30,18 +30,18 @@ function Navbar() {
 					<div className='ml-6 hidden h-full cursor-pointer  items-center uppercase no-underline md:flex'>
 						{user && (
 							<>
-								<NavPill icon={<PlusSmIcon className='w-6' />} text={'Stwórz test'} path={'/test/newTest'} />
-								<NavPill icon={<ClipboardListIcon className='w-5' />} text={'Moje testy'} path={'/tests/show'} />
+								<NavPill icon={<PlusSmIcon className='w-6' />} text={'New Test'} path={'/test/newTest'} />
+								<NavPill icon={<ClipboardListIcon className='w-5' />} text={'My Tests'} path={'/tests/show'} />
 							</>
 						)}
-						<NavPill icon={<PlayIcon className='w-5' />} text={'Dołącz'} path={'/test/solve/'} />
+						<NavPill icon={<PlayIcon className='w-5' />} text={'Join'} path={'/test/solve/'} />
 						{user ? (
-							<button className='btn btn-outline' onClick={(e) => signOut()}>
-								Wyloguj
+							<button className='btn btn-sm btn-outline m-2' onClick={(e) => signOut()}>
+								Log Out
 							</button>
 						) : (
 							<Link href={'/auth/signin?#'}>
-								<button className='btn btn-outline'>Zaloguj</button>
+								<button className='btn btn-sm btn-outline m-2'>Log In</button>
 							</Link>
 						)}
 					</div>
@@ -52,21 +52,21 @@ function Navbar() {
 						(navOpen ? '  animate-slideIn ' : ' animate-slideOut ')
 					}>
 					<ul className='flex flex-col space-y-3 p-6 text-lg font-normal tracking-wider transition-all md:mt-0 md:flex-row md:space-x-8 md:font-medium'>
-						<a className='min-w-xs w-full rounded-md text-gray-100  transition-colors hover:bg-gray-800/20' href={'/test/newTest'}>
+						<a className='min-w-xs w-full rounded-md border border-gray-800/20 text-gray-100  transition-colors hover:bg-gray-800/20' href={'/test/newTest'}>
 							<li className='flex items-center justify-end space-x-2 p-4'>
-								<span>Nowy Test</span>
+								<span>New Test</span>
 								<PlusSmIcon className='w-6' />
 							</li>
 						</a>
-						<a className='min-w-xs w-full rounded-md text-gray-100 transition-colors hover:bg-gray-800/20' href={'/tests/show'}>
+						<a className='min-w-xs w-full rounded-md border border-gray-800/20 text-gray-100 transition-colors hover:bg-gray-800/20' href={'/tests/show'}>
 							<li className='flex items-center justify-end space-x-2 p-4'>
-								<span>Moje Testy</span>
+								<span>My Tests</span>
 								<ClipboardListIcon className='w-5' />
 							</li>
 						</a>
-						<a className='min-w-xs w-full rounded-md text-gray-100 transition-colors hover:bg-gray-800/20' href={'/test/solve/'}>
+						<a className='min-w-xs w-full rounded-md border border-gray-800/20 text-gray-100 transition-colors hover:bg-gray-800/20' href={'/test/solve/'}>
 							<li className='flex items-center justify-end space-x-2 p-4'>
-								<span>Dołącz do Testu</span>
+								<span>Join to test</span>
 								<PlayIcon className='w-5' />
 							</li>
 						</a>
