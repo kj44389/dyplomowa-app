@@ -1,29 +1,52 @@
-# Next.js + Tailwind CSS Example
+# Little about this project. 
+This project is a site for online knowledge tests where users can create, edit, and share tests. In this project I have used some tech I didn't work with before, like: Next.js, React, TailwindCSS. Everything that I achieved is a product of my self-learning ability.  
 
-This example shows how to use [Tailwind CSS](https://tailwindcss.com/) [(v2.2)](https://blog.tailwindcss.com/tailwindcss-2-2) with Next.js. It follows the steps outlined in the official [Tailwind docs](https://tailwindcss.com/docs/guides/nextjs).
-
-It uses the new [`Just-in-Time Mode`](https://tailwindcss.com/docs/just-in-time-mode) for Tailwind CSS.
+## Tech Stack
+* [Next.js](https://nextjs.org/)
+* [React.js](https://reactjs.org/)
+* [TailwindCSS](https://tailwindcss.com/)
+* [NextAuth](https://next-auth.js.org/)
+* MySQL
 
 ## Preview
+### Log in page
+![log in page](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/logIn.png?raw=true)
 
-Preview the example live on [StackBlitz](http://stackblitz.com/):
+### Dashboard - mobile
+![dashboard mobile](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/Dashboard.png?raw=true)
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-tailwindcss)
+### Dashboard - PC
+![dashboard pc](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/Dashboard_PC.png?raw=true)
 
-## Deploy your own
+### Tests list page
+![Tests list](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestsList.png?raw=true)
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+### Form to provide test code for logged users
+![Form to provide test code for logged users](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestCodeFormForUsers.png?raw=true)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss&project-name=with-tailwindcss&repository-name=with-tailwindcss)
+### Form to provide test code for guests
+![Form to provide test code for guests](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestCodeFormForGuests.png?raw=true)
 
-## How to use
+### Test page
+![Test page](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/Test.png?raw=true)
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+![Test page 2](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/Test2.png?raw=true)
 
-```bash
-npx create-next-app --example with-tailwindcss with-tailwindcss-app
-# or
-yarn create next-app --example with-tailwindcss with-tailwindcss-app
-```
+### Losing focus warning
+![Losing focus warning](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/losingFocusWarning.png?raw=true)
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+### Test Results
+![Creator stats page 2](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/testResults.png?raw=true)
+
+### New test page
+![New test page](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/newTest.png?raw=true)
+
+![New test page 2](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/newTest2.png?raw=true)
+
+### Creator stats page
+![Creator stats page](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/CreatorStats_1.png?raw=true)
+
+![Creator stats page 2](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/CreatorStats_2.png?raw=true)
+
+### User stats page
+![User stats page](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TakerStats.png?raw=true)
