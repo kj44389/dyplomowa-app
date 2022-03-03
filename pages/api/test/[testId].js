@@ -1,11 +1,16 @@
-import { set } from 'express/lib/application';
+import _fetch from 'isomorphic-fetch';
 import sql_query from 'lib/db';
 import { getSession } from 'next-auth/react';
+import { absoluteUrlPrefix } from 'next.config';
 
-function notFoundException(status, message) {
+function Exception(status, message) {
 	this.status = status;
 	this.message = message;
 }
+
+const deleteSQL = async ({ query, values }) => {
+	return await sql_query(query, values);
+};
 
 export default async (req, res) => {
 	const session = await getSession({ req });
@@ -15,11 +20,11 @@ export default async (req, res) => {
 			const query = 'SELECT * FROM tests WHERE test_id =?';
 			const results = await sql_query(query, [test_id]);
 			if (results.length == 0) {
-				throw new notFoundException(404, 'Tests not found!');
+				throw new Exception(404, 'Tests not found!');
 			}
 			return res.json(results);
 		} else if (req.method === 'POST') {
-			if (!session) throw new notFoundException(405, 'not authorized to create new test');
+			if (!session) throw new Exception(401, 'not authorized to create new test');
 			const body = JSON.parse(req.body);
 			const questions = body.questions;
 			const answers = body.answers;
@@ -82,7 +87,7 @@ export default async (req, res) => {
 			const answers = body.answers;
 			const test = body.test;
 			let emails = test.emails.split(',');
-			if (!session && session.id === test.test_creator) throw new notFoundException(405, 'not authorized to update test');
+			if (!session && session.id === test.test_creator) throw new Exception(401, 'not authorized to update test');
 			for (let i = 0; i < emails.length; i++) {
 				emails[i] = emails[i].trim();
 			}
@@ -180,11 +185,48 @@ export default async (req, res) => {
 				});
 			}
 			return res.json({ status: 200, statusText: 'Test updated successfully' });
+		} else if (req.method === 'DELETE') {
+			let query = '';
+			if (!session) throw new Exception(401, 'not authorized to update test');
+			const test = await _fetch(`${absoluteUrlPrefix}/api/test/${test_id}`, { method: 'GET' })
+				.then((res) => res.json())
+				.catch((err) => {
+					throw new Exception(404, 'Test not found');
+				});
+
+			if (session.id === test.test_creator) throw new Exception(401, 'not authorized to update test');
+			//deleting picked answers records
+			await deleteSQL({ query: `DELETE FROM test_done_answers WHERE done_id IN (SELECT done_id FROM test_done WHERE test_id = ?)`, values: [test_id] });
+
+			// deleting test approach records
+			await deleteSQL({ query: `DELETE FROM test_done WHERE test_id = ?`, values: [test_id] });
+
+			//deleting test participants records
+			await deleteSQL({ query: `DELETE FROM test_participants WHERE test_id = ?`, values: [test_id] });
+
+			//deleting answers
+			await deleteSQL({
+				query: `DELETE FROM answers WHERE answer_id IN (SELECT answer_id FROM questions_answers WHERE question_id IN (SELECT question_id FROM tests_questions WHERE test_id = ?))`,
+				values: [test_id],
+			});
+
+			//deleting relation questions - answers
+			await deleteSQL({ query: `DELETE FROM questions_answers WHERE question_id IN (SELECT question_id FROM tests_questions WHERE test_id = ?)`, values: [test_id] });
+
+			//deleting questions
+			await deleteSQL({ query: 'DELETE FROM questions WHERE question_id IN (SELECT question_id FROM tests_questions WHERE test_id = ?)', values: [test_id] });
+
+			//deleting relation tests-questions
+			await deleteSQL({ query: 'DELETE FROM tests_questions WHERE test_id = ?', values: [test_id] });
+
+			//deleting test record
+			await deleteSQL({ query: 'DELETE FROM tests WHERE test_id = ?', values: [test_id] });
+
+			res.status(200).json({ status: 200, statusText: 'OK', data: [] });
+		} else {
+			throw new Exception(405, 'Method not allowed');
 		}
 	} catch (err) {
-		if (err instanceof notFoundException) {
-			res.status(err.status).end();
-		}
-		res.status(500).json({ message: err.message });
+		res.status(err.status).json({ status: err.status, statusText: err.message });
 	}
 };
