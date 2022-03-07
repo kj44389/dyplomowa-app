@@ -26,7 +26,7 @@ export async function getServerSideProps(context) {
 	};
 }
 
-const testStats = ({ testId, testData, type, userId, userEmail }) => {
+const stats = ({ testId, testData, type, userId, userEmail }) => {
 	const statsRender = (id, test_creator) => {
 		if (type === 'creator') return <CreatorStats testId={testId} userId={userId} />;
 		return <TakerStats testId={testId} userId={userId} userEmail={userEmail} />;
@@ -39,4 +39,4 @@ const testStats = ({ testId, testData, type, userId, userEmail }) => {
 	);
 };
 
-export default testStats;
+export default stats;
