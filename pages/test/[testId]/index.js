@@ -19,14 +19,14 @@ const getShuffledArr = (arr) => {
 
 export async function getServerSideProps(context) {
 	const session = await getSession(context);
-	console.log(session);
+
 	// if (!session) return
 
 	let questionsIds = [];
 	let shuffledData = [];
 	let testId = context.query.testId;
 
-	console.log(testId);
+
 	const testData = await _fetch(`${absoluteUrlPrefix}/api/test/${testId}/questions`, { method: 'GET' })
 		.then((res) => {
 			return res.json();
@@ -44,7 +44,7 @@ export async function getServerSideProps(context) {
 			return res.json();
 		});
 	}
-	console.log(testData);
+
 	return {
 		props: {
 			testData: testData,
@@ -106,7 +106,6 @@ const Test = ({ testData, fetchedIds, fetchedAnswers, fullName, formEmail }) => 
 	// 	const fetchStatus = _fetch(`${absoluteUrlPrefix}/api/test/${testData.test_id}/questions`, { method: 'GET' })
 	// 		.then((res) => {
 	// 			return res.json();
-	// 		})
 	// 		.then((data) => {
 	// 			if (data.status === 200) shuffledData = getShuffledArr(data.data);
 	// 			for (let i of shuffledData) {
@@ -190,13 +189,18 @@ const Test = ({ testData, fetchedIds, fetchedAnswers, fullName, formEmail }) => 
 	const handleTestStateIncrement = () => {
 		const { index, maxIndex } = testState;
 		if (index === maxIndex) return;
-		setTestState({ ...testState, index: index + 1 });
+		if (questionsState[index + 1].question_time === '00:00:00') {
+			setTestState({ ...testState, index: questionsState.findIndex((question, localIndex) => question.question_time !== '00:00:00' && localIndex > index) });
+			console.log(index + 1, questionsState[index + 1]);
+		} else setTestState({ ...testState, index: index + 1 });
 	};
 
 	const handleTestStateDecrement = () => {
 		const { index, maxIndex } = testState;
 		if (index === 0) return;
-		setTestState({ ...testState, index: index - 1 });
+		if (questionsState[index + 1].question_time === '00:00:00')
+			setTestState({ ...testState, index: questionsState.findIndex((question, localIndex) => question.question_time !== '00:00:00' && localIndex < index) });
+		else setTestState({ ...testState, index: index - 1 });
 	};
 
 	return (
