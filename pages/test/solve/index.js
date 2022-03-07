@@ -32,7 +32,7 @@ export async function getServerSideProps(context) {
 		})
 		.then((data) => tests.push(data.data));
 
-	console.log('tests', tests);
+	// console.log('tests', tests);
 	return { props: { tests: tests } };
 }
 

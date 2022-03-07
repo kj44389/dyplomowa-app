@@ -7,7 +7,7 @@ function Exception({ status, message }) {
 
 export default async (req, res) => {
 	const slug = req.query.slug;
-	console.log(slug);
+
 	try {
 		if (slug.length > 3) {
 			throw new Exception({ status: 400, message: 'Invalid slug' });

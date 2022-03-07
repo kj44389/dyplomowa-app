@@ -1,10 +1,8 @@
-import { response } from 'express';
 import _fetch from 'isomorphic-fetch';
 import sql_query from 'lib/db';
 import moment from 'moment';
 import { getSession } from 'next-auth/react';
 import { absoluteUrlPrefix } from 'next.config';
-import { useState } from 'react';
 import { v4 } from 'uuid';
 
 const findQuestionIndex = (questions, id) => {
@@ -71,7 +69,6 @@ export default async (req, res) => {
 		if (!results) throw new Exception(500, "Couldn't associate answers with test done");
 
 		if (session) {
-			console.log(session);
 			const getData = await fetch(`${absoluteUrlPrefix}/api/metadata/${user_id}`, { method: 'GET' })
 				.then((response) => {
 					return response.text();

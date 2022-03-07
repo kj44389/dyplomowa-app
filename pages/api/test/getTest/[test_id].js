@@ -11,7 +11,6 @@ export default async (req, res) => {
 		const query = 'SELECT * FROM tests WHERE test_id IN (?)';
 
 		const results = await sql_query(query, [test_id]);
-		console.log('-----------------------------------------------------------------------------', results);
 		if (results.length == 0) {
 			throw new notFoundException(404, 'Tests not found!');
 		}

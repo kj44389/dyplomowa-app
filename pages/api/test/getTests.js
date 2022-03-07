@@ -7,13 +7,11 @@ function notFoundException(status, message) {
 
 export default async (req, res) => {
 	const tests = JSON.parse(req.query.tests);
-	console.log(...tests);
-	console.log(...JSON.parse(req.query.tests));
+
 	try {
 		const query = 'SELECT * FROM tests WHERE test_id IN (?)';
 
 		const results = await sql_query(query, [...tests]);
-		console.log('-----------------------------------------------------------------------------', results);
 		if (results.length == 0) {
 			throw new notFoundException(404, 'Tests not found!');
 		}
