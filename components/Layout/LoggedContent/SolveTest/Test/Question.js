@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactPlayer from 'react-player';
 
 const Question = ({ children, question, id, numberOfQuestions }) => {
@@ -20,13 +19,13 @@ const Question = ({ children, question, id, numberOfQuestions }) => {
 		}
 	};
 	return (
-		<div className='flex flex-col justify-center items-center md:p-5 w-full h-full'>
-			<div className='w-full max-w-sm md:max-w-[900px] p-5 md:p-10'>
-				<div className='px-4 py-2 text-sm rounded-md text-white  bg-green-500/20 '>
+		<div className='flex h-full w-full flex-col items-center justify-center md:p-5'>
+			<div className='w-full max-w-sm p-5 md:max-w-[900px] md:p-10'>
+				<div className='rounded-md bg-green-500/20 px-4 py-2 text-sm  text-white '>
 					Pytanie {id} z {numberOfQuestions} : {question_name}
 				</div>
 				{question_type !== 'text_one' && question_type !== 'text_many' && <div>{renderTypeSwitch()}</div>}
-				<div className='flex flex-col w-full'>{children}</div>
+				<div className='flex w-full flex-col'>{children}</div>
 			</div>
 		</div>
 	);

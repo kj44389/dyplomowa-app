@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactPlayer from 'react-player';
 
 const Answer = ({ answer, index, disabled, picked, onClick }) => {
@@ -20,16 +19,16 @@ const Answer = ({ answer, index, disabled, picked, onClick }) => {
 		}
 	};
 	return (
-		<div className='flex flex-row w-full items-center my-1 p-3'>
+		<div className='my-1 flex w-full flex-row items-center p-3'>
 			<>
-				<div className='flex justify-center items-center text-md text-white-500 w-8 h-8 p-4 m-2 bg-gray-800/30 rounded-md cursor-pointer'>{index + 1}</div>
+				<div className='text-md text-white-500 m-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-gray-800/30 p-4'>{index + 1}</div>
 				<div className='flex flex-row md:items-end md:justify-center'>
 					<label className='label '>
-						<input type='checkbox' className='checkbox w-6 h-6' defaultChecked={picked} disabled={disabled} onClick={(e) => onClick(question_id, answer_id)} />
+						<input type='checkbox' className='checkbox h-6 w-6' defaultChecked={picked} disabled={disabled} onClick={(e) => onClick(question_id, answer_id)} />
 					</label>
 				</div>
 			</>
-			<div className='flex flex-col max-w-sm text-sm items-center pl-5 justify-center text-center space-y-4'>
+			<div className='flex max-w-sm flex-col items-center justify-center space-y-4 pl-5 text-center text-sm'>
 				{answer_type !== 'text_one' && answer_type !== 'text_many' && <div>{renderTypeSwitch()}</div>}
 				<div className='w-full text-center'>{answer_name}</div>
 			</div>
