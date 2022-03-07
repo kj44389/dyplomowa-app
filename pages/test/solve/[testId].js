@@ -60,11 +60,9 @@ export async function getServerSideProps(context) {
 	};
 }
 
-const solve = ({ testData, testQuestions, testAnswers, fetchedIds, fullName, Email }) => {
-	const { data: user, status } = useSession();
-	console.log(fullName, Email);
+const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
+	const { data: user } = useSession();
 	const [questions, setQuestions] = useState(testQuestions);
-	const [questionsIds, setQuestionIds] = useState(fetchedIds);
 	const [question, setQuestion] = useState({});
 	const [results, setResults] = useState([]);
 
@@ -161,22 +159,31 @@ const solve = ({ testData, testQuestions, testAnswers, fetchedIds, fullName, Ema
 	const handleTestStateIncrement = () => {
 		const { index, maxIndex } = testState;
 		if (index === maxIndex) return;
-
+		let nextAvailableIndex = index + 1;
+		if (questions[index + 1].question_time === '00:00:00') {
+			nextAvailableIndex = questions.findIndex((question, localIndex) => localIndex > index && question.question_time != '00:00:00');
+			if (nextAvailableIndex === -1) nextAvailableIndex = index;
+		}
 		let tmp = questions;
 		tmp[index].question_time = timeLeft;
 		setQuestions(tmp);
-		setTestState({ ...testState, index: index + 1 });
-		setTimeLeft(questions[index + 1].question_time);
+		setTestState({ ...testState, index: nextAvailableIndex });
+		setTimeLeft(questions[nextAvailableIndex].question_time);
 	};
 
 	const handleTestStateDecrement = () => {
 		const { index, maxIndex } = testState;
 		if (index === 0) return;
+		let nextAvailableIndex = index - 1;
+		if (questions[index - 1].question_time === '00:00:00') {
+			nextAvailableIndex = questions.findIndex((question, localIndex) => localIndex < index && question.question_time !== '00:00:00');
+			if (nextAvailableIndex === -1) nextAvailableIndex = index;
+		}
 		let tmp = questions;
 		tmp[index].question_time = timeLeft;
 		setQuestions(tmp);
-		setTestState({ ...testState, index: index - 1 });
-		setTimeLeft(questions[index - 1].question_time);
+		setTestState({ ...testState, index: nextAvailableIndex });
+		setTimeLeft(questions[nextAvailableIndex].question_time);
 	};
 
 	return (
@@ -209,7 +216,7 @@ const solve = ({ testData, testQuestions, testAnswers, fetchedIds, fullName, Ema
 														<Answer
 															key={answer.answer_id}
 															answer={answer}
-															index={index}
+															index={index}www
 															disabled={question?.question_time === '00:00:00' ? true : false}
 															picked={questionsState[questionsState.findIndex((state) => state.answer_id === answer.answer_id)]?.picked}
 															onClick={handleQuestionStateChange}
@@ -227,28 +234,28 @@ const solve = ({ testData, testQuestions, testAnswers, fetchedIds, fullName, Ema
 								<div className='mx-auto  my-2 space-x-5 self-center'>
 									{testState.index === 0 ? (
 										<button className='btn' disabled>
-											Poprzedni
+											Prev
 										</button>
 									) : (
 										<button className='btn border-0 bg-green-500' onClick={(e) => handleTestStateDecrement()}>
-											Poprzedni
+											Prev
 										</button>
 									)}
 									{testState.index === testState.maxIndex ? (
 										<button className='btn' disabled>
-											Następny
+											Next
 										</button>
 									) : (
 										<button className='btn border-0 bg-green-500' onClick={(e) => handleTestStateIncrement()}>
-											Następny
+											Next
 										</button>
 									)}
 								</div>
 							</>
 						)}
-						{timeRunOut && <h2 className='my-3 text-lg'>Czas się skończył.</h2>}
+						{timeRunOut && <h2 className='my-3 text-lg'>Time run out.</h2>}
 						<button className='btn  btn-sm btn-outline mx-auto self-center' onClick={(e) => handleFinishTest()}>
-							Zakończ
+							End
 						</button>
 					</div>
 				) : (
