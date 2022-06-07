@@ -25,7 +25,7 @@ const getAllByCode = async (tests) => {
 	return { status: 200, data: results };
 };
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	try {
 		if (req.method !== 'GET') throw new Exception(403, 'method not allowed');
 
@@ -41,3 +41,5 @@ export default async (req, res) => {
 		return res.status(err.status).json({ status: err.status, message: err.message });
 	}
 };
+
+export default handler;

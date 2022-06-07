@@ -24,7 +24,7 @@ function LoggedContent() {
 				setMetaData({ points_scored: 0, points_total: 0, tests_passed: 0, tests_total: 0 });
 				if (data.status === 200) setMetaData(data.data[0]);
 			});
-	}, [status]);
+	}, [status, data?.id, router]);
 
 	useEffect(() => {
 		if (metaData.length === 0) return;
@@ -33,9 +33,9 @@ function LoggedContent() {
 
 	return (
 		fetchStatus && (
-			<div className='w-full h-full flex justify-center items-center flex-col flex-wrap p-8'>
-				<h2 className='text-xl uppercase font-bold tracking-widest my-8'>Your Statistics </h2>
-				<div className='flex justify-center flex-wrap flex-row'>
+			<div className='flex h-full w-full flex-col flex-wrap items-center justify-center p-8'>
+				<h2 className='my-8 text-xl font-bold uppercase tracking-widest'>Your Statistics </h2>
+				<div className='flex flex-row flex-wrap justify-center'>
 					<StatsCard icon={<FireIcon className='w-5 ' />} title={'Total Accuracy'} data={`${((metaData.points_scored / metaData.points_total) * 100).toFixed(0)}%`} />
 					<StatsCard icon={<BadgeCheckIcon className='w-5 ' />} title={'Total Passed Tests'} data={`${metaData.tests_passed}`} />
 					<StatsCard icon={<ClipboardListIcon className='w-5' />} title={'Total Tests'} data={`${metaData.tests_total}`} />

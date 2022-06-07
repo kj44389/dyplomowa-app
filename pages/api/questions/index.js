@@ -4,9 +4,10 @@ function Exception(status, message) {
 	this.status = status;
 	this.message = message;
 }
-
-export default async (req, res) => {
-    if(req.method !== 'GET') {throw new Exception()}
+const handler = async (req, res) => {
+	if (req.method !== 'GET') {
+		throw new Exception();
+	}
 	const test_id = req.query.test_id;
 
 	try {
@@ -16,10 +17,10 @@ export default async (req, res) => {
 			throw new Exception(404, 'Tests not found!');
 		}
 
-        let questions_ids = [];
-        for(let i of results){
-            questions_ids.push(i.question_id);
-        }
+		let questions_ids = [];
+		for (let i of results) {
+			questions_ids.push(i.question_id);
+		}
 
 		const questionsQuery = `SELECT * FROM questions WHERE question_id IN (?)`;
 		const queryResults = await sql_query(questionsQuery, [questions_ids]);
@@ -30,7 +31,8 @@ export default async (req, res) => {
 
 		return res.json(queryResults);
 	} catch (err) {
-
 		res.status(err.status).json({ status: err.status, message: err.message });
 	}
 };
+
+export default handler;

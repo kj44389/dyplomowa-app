@@ -1,4 +1,5 @@
 import ReactPlayer from 'react-player';
+import Image from 'next/image';
 
 const Question = ({ children, question, id, numberOfQuestions }) => {
 	const { question_id, question_name, question_type, question_addon_src } = question;
@@ -8,13 +9,16 @@ const Question = ({ children, question, id, numberOfQuestions }) => {
 				return <ReactPlayer url={`/${question_addon_src}`} height={70} width={384} controls />;
 				break;
 			case 'with_image':
-				return <img src={`/${question_addon_src}`} className='max-w-sm' />;
+				return <Image alt='question image' src={`/${question_addon_src}`} className='max-w-sm' />;
 				break;
 			case 'text_one':
 				return;
 				break;
 			case 'text_many':
 				return;
+				break;
+			case 'with_youtube':
+				return <ReactPlayer url={`/${question_addon_src}`} width={384} controls />;
 				break;
 		}
 	};

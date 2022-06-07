@@ -5,7 +5,7 @@ function notFoundException(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	const tests = JSON.parse(req.query.tests);
 
 	try {
@@ -23,3 +23,5 @@ export default async (req, res) => {
 		res.status(500).json({ message: err.message });
 	}
 };
+
+export default handler;

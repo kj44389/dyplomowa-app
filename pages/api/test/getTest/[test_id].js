@@ -5,7 +5,7 @@ function notFoundException(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	const test_id = req.query.test_id;
 	try {
 		const query = 'SELECT * FROM tests WHERE test_id IN (?)';
@@ -22,3 +22,5 @@ export default async (req, res) => {
 		res.status(500).json({ message: err.message });
 	}
 };
+
+export default handler;

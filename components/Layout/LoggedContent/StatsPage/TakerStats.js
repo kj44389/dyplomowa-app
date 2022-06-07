@@ -21,7 +21,7 @@ const TakerStats = ({ testId, userId, userEmail }) => {
 				setColor(data.data[0].passed === 1 ? 'text-green-400  text-center font-bold my-1' : 'text-red-400  text-center font-bold my-1');
 				setStats(data.data[0]);
 			});
-	}, [status]);
+	}, [status, testId, userEmail]);
 
 	useEffect(() => {
 		if (stats === {}) return;
@@ -31,7 +31,7 @@ const TakerStats = ({ testId, userId, userEmail }) => {
 			.then((data) => setTest(data[0]));
 
 		console.log(stats);
-	}, [stats]);
+	}, [stats, testId]);
 
 	useEffect(() => {
 		if (test === {}) return;
@@ -40,7 +40,7 @@ const TakerStats = ({ testId, userId, userEmail }) => {
 			.then((data) => {
 				setCreator(data[0]);
 			});
-	}, [test]);
+	}, [test, userId]);
 
 	useEffect(() => {
 		if (creator === {}) return;
@@ -51,20 +51,20 @@ const TakerStats = ({ testId, userId, userEmail }) => {
 		fetchStatus && (
 			<div className='m-2 w-full max-w-xs rounded-2xl bg-white p-4 text-red-400 shadow-lg dark:bg-gray-800'>
 				<div className='flex flex-col'>
-					<p className='text-md p-2 text-black dark:text-white'>Temat: {test.test_name}</p>
+					<p className='text-md p-2 text-black dark:text-white'>Topic: {test.test_name}</p>
 				</div>
 				<div className='flex flex-col space-y-2'>
-					<p className='px-2 text-xs text-black dark:text-gray-500'>Stworzone przez: {creator.user_full_name}</p>
-					<p className='px-2 text-xs text-black dark:text-gray-300'>Termin do: {moment(test.test_date).format('YYYY-MM-DD HH:mm')}</p>
-					<p className='px-2 text-xs text-black dark:text-gray-300'>Ostatnie podejście: {moment(stats.finished_at).format('YYYY-MM-DD HH:mm')}</p>
+					<p className='px-2 text-xs text-black dark:text-gray-500'>Created by: {creator.user_full_name}</p>
+					<p className='px-2 text-xs text-black dark:text-gray-300'>Due: {moment(test.test_date).format('YYYY-MM-DD HH:mm')}</p>
+					<p className='px-2 text-xs text-black dark:text-gray-300'>Last try: {moment(stats.finished_at).format('YYYY-MM-DD HH:mm')}</p>
 				</div>
 				<div className='flex flex-col justify-start space-y-2 p-2'>
 					<p className='text-left font-bold  text-gray-700 dark:text-gray-100 '>
-						Punkty: {stats?.points_scored} / {stats?.points_total}
+						Points: {stats?.points_scored} / {stats?.points_total}
 					</p>
-					<p className='text-left font-bold  text-gray-700 dark:text-gray-100 '>Wynik: {((stats?.points_scored / stats?.points_total) * 100).toFixed(0)}%</p>
+					<p className='text-left font-bold  text-gray-700 dark:text-gray-100 '>Score: {((stats?.points_scored / stats?.points_total) * 100).toFixed(0)}%</p>
 
-					<p className={color}>{stats?.passed === 1 ? `Test Zdany!` : `Następnym razem pójdzie lepiej!`}</p>
+					<p className={color}>{stats?.passed === 1 ? `Test Passed!` : `Next time will be better!`}</p>
 				</div>
 			</div>
 		)

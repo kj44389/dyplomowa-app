@@ -16,7 +16,7 @@ function Exception(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	if (req.method !== 'POST') res.status(402).json({ message: 'method not allowed' });
 
 	const body = JSON.parse(req.body);
@@ -115,3 +115,5 @@ export default async (req, res) => {
 		return res.status(err.status || 500).json({ status: err.status || 500, message: err.message });
 	}
 };
+
+export default handler;

@@ -5,7 +5,7 @@ function Exception(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	if (req.method !== 'GET') {
 		throw new Exception(405, 'not authorized');
 	}
@@ -24,3 +24,5 @@ export default async (req, res) => {
 		res.status(err.status).json({ status: err.status, message: err.message });
 	}
 };
+
+export default handler;

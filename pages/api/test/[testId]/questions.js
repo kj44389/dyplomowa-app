@@ -5,10 +5,10 @@ function Exception(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	// const body = req.body;
 	const testId = req.query.testId;
-
+	console.log(testId);
 
 	try {
 		const query = `SELECT * FROM tests_questions WHERE test_id IN (?)`;
@@ -17,8 +17,8 @@ export default async (req, res) => {
 			throw new Exception(404, 'Tests not found!');
 		}
 
-		let questions_ids = []
-		for(let i of results){
+		let questions_ids = [];
+		for (let i of results) {
 			questions_ids.push(i.question_id);
 		}
 
@@ -29,8 +29,9 @@ export default async (req, res) => {
 			throw new Exception(404, 'Tests not found!');
 		}
 
-		return res.json({status: 200, data: queryResults});
+		return res.json({ status: 200, data: queryResults });
 	} catch (err) {
-		res.status(err.status || 500 ).json({status: err.status , message: err.message });
+		res.status(err.status || 500).json({ status: err.status, message: err.message });
 	}
 };
+export default handler;

@@ -1,4 +1,4 @@
-import { ChartBarIcon, PlayIcon, TrashIcon } from '@heroicons/react/outline';
+import { ChartBarIcon, PlayIcon, TrashIcon, PencilIcon } from '@heroicons/react/outline';
 import Badge from 'components/Layout/badge/badge';
 import _fetch from 'isomorphic-fetch';
 import moment from 'moment';
@@ -9,6 +9,9 @@ import { v4 } from 'uuid';
 function TestList({ header, testDone, tests, creator = false, handleDelete = null }) {
 	const CheckIfTestDone = (test_id) => {
 		return testDone?.findIndex((testDone) => testDone.test_id === test_id);
+	};
+	const CheckIfDatePassed = (testDate) => {
+		return moment(testDate) < moment();
 	};
 
 	return (
@@ -46,31 +49,44 @@ function TestList({ header, testDone, tests, creator = false, handleDelete = nul
 							<div className='mt-4 flex items-center space-x-1 text-sm'>
 								{CheckIfTestDone(test_id) >= 0 || creator ? (
 									<div className='tooltip tooltip-bottom' data-tip='stats'>
-										<Link href={`/test/${test_id}/stats`}>
+										<Link href={`/test/${test_id}/stats`} passHref>
 											<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-700/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
 												<ChartBarIcon className='h-5 w-5 ' />
 											</button>
 										</Link>
 									</div>
 								) : (
-									<div className='tooltip tooltip-bottom' data-tip='join'>
-										<Link href={`/test/solve/${test_id}`}>
-											<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-700/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
-												<PlayIcon className='h-5 w-5 ' />
-											</button>
-										</Link>
-									</div>
+									!CheckIfDatePassed(test_date) && (
+										<div className='tooltip tooltip-bottom' data-tip='join'>
+											<Link href={`/test/solve/${test_id}`} passHref>
+												<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-700/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
+													<PlayIcon className='h-5 w-5 ' />
+												</button>
+											</Link>
+										</div>
+									)
 								)}
 								{creator && (
-									<div className='tooltip tooltip-bottom' data-tip='delete'>
-										{/* <Link href={`/test/${test_id}/testStats`}> */}
-										<button
-											className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 text-red-300 transition-colors hover:bg-gray-800 hover:text-red-500'
-											onClick={() => handleDelete(test_id)}>
-											<TrashIcon className='h-5 w-5 ' />
-										</button>
-										{/* </Link> */}
-									</div>
+									<>
+										<div className='tooltip tooltip-bottom' data-tip='delete'>
+											{/* <Link href={`/test/${test_id}/testStats`}> */}
+											<button
+												className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2 text-red-300 transition-colors hover:bg-gray-800 hover:text-red-500'
+												onClick={() => handleDelete(test_id)}>
+												<TrashIcon className='h-5 w-5 ' />
+											</button>
+											{/* </Link> */}
+										</div>
+										<div className='tooltip tooltip-bottom' data-tip='edit'>
+											{/* <Link href={`/test/${test_id}/testStats`}> */}
+											<Link href={`/test/newTest?edit=true&test_id=${test_id}`} passHref>
+												<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2  transition-colors hover:bg-gray-800 hover:text-red-500'>
+													<PencilIcon className='h-5 w-5 ' />
+												</button>
+											</Link>
+											{/* </Link> */}
+										</div>
+									</>
 								)}
 							</div>
 						</div>

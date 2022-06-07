@@ -2,12 +2,12 @@ import React from 'react';
 
 const NameEmailForm = ({ setEmailNameForm, setTestCode, emailNameForm, formSubmit }) => {
 	return (
-		<div className='card bg-base-200 mx-auto w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>
-			<h2 className='text-2xl'>Zanim zaczniesz test:</h2>
+		<div className='card bg-base-200 m-3 mx-auto w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>
+			<h2 className='text-2xl'>Before your test begins, please enter:</h2>
 			{/* test name */}
 			<div className='form-control'>
 				<label className='label'>
-					<span className='label-text'>Podaj swoje imię:</span>
+					<span className='label-text'>Your name:</span>
 				</label>
 				<input
 					type='text'
@@ -20,7 +20,7 @@ const NameEmailForm = ({ setEmailNameForm, setTestCode, emailNameForm, formSubmi
 			</div>
 			<div className='form-control'>
 				<label className='label'>
-					<span className='label-text'>Podaj swoje nazwisko:</span>
+					<span className='label-text'>Your surname:</span>
 				</label>
 				<input
 					type='text'
@@ -33,7 +33,7 @@ const NameEmailForm = ({ setEmailNameForm, setTestCode, emailNameForm, formSubmi
 			</div>
 			<div className='form-control'>
 				<label className='label'>
-					<span className='label-text'>Podaj swoje email:</span>
+					<span className='label-text'>Your email:</span>
 				</label>
 				<input
 					type='email'
@@ -61,6 +61,7 @@ const NameEmailForm = ({ setEmailNameForm, setTestCode, emailNameForm, formSubmi
 			<div className='form-control'>
 				<input
 					type='submit'
+					value='Enter'
 					onClick={(e) => {
 						formSubmit(e);
 					}}

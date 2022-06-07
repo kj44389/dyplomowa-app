@@ -40,7 +40,7 @@ function Navbar() {
 								Log Out
 							</button>
 						) : (
-							<Link href={'/auth/signin?#'}>
+							<Link href={'/auth/signin?#'} passHref>
 								<button className='btn btn-sm btn-outline m-2'>Log In</button>
 							</Link>
 						)}

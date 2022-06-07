@@ -5,8 +5,7 @@ function Exception({ status, message }) {
 	this.status = status;
 	this.message = message;
 }
-
-export default async (req, res) => {
+const handler = async (req, res) => {
 	try {
 		const userId = req.query.userId;
 
@@ -33,3 +32,5 @@ export default async (req, res) => {
 		res.status(err.status).json({ status: err.status, message: err.message });
 	}
 };
+
+export default handler;

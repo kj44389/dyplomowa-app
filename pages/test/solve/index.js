@@ -36,7 +36,7 @@ export async function getServerSideProps(context) {
 	return { props: { tests: tests } };
 }
 
-const solve = ({ tests }) => {
+const Solve = ({ tests }) => {
 	const router = useRouter();
 	const [formTestCode, setFormTestCode] = useState('');
 
@@ -80,13 +80,13 @@ const solve = ({ tests }) => {
 				) : (
 					<NameEmailForm setEmailNameForm={setEmailNameForm} setTestCode={setFormTestCode} emailNameForm={emailNameForm} formSubmit={handleRedirectWithFormData} />
 				)
-			) : moment(testData.test_date).diff(moment()) > 0 ? (
+			) : moment(testData?.test_date).diff(moment()) > 0 ? (
 				handleRedirect()
 			) : (
-				<ErrorPage title={'Koniec czasu!'} message={'Czas na wykonanie testu się skończył'} />
+				<ErrorPage title={'Time has passed!'} message={'Time for solving this test has passed'} />
 			)}
 		</Layout>
 	);
 };
 
-export default solve;
+export default Solve;

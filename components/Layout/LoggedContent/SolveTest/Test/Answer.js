@@ -1,4 +1,5 @@
 import ReactPlayer from 'react-player';
+import Image from 'next/image';
 
 const Answer = ({ answer, index, disabled, picked, onClick }) => {
 	const { answer_id, question_id, answer_name, answer_type, answer_addon_src } = answer;
@@ -8,7 +9,7 @@ const Answer = ({ answer, index, disabled, picked, onClick }) => {
 				return <ReactPlayer url={`/${answer_addon_src}`} height={70} width={384} controls />;
 				break;
 			case 'with_image':
-				return <img src={`/${answer_addon_src}`} className='max-w-sm' />;
+				return <Image alt='answer image' src={`/${answer_addon_src}`} className='max-w-sm' />;
 				break;
 			case 'text_one':
 				return;

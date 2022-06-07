@@ -12,7 +12,7 @@ const deleteSQL = async ({ query, values }) => {
 	return await sql_query(query, values);
 };
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	const session = await getSession({ req });
 	const test_id = req.query.testId;
 	try {
@@ -230,3 +230,5 @@ export default async (req, res) => {
 		res.status(err.status).json({ status: err.status, statusText: err.message });
 	}
 };
+
+export default handler;

@@ -5,7 +5,7 @@ function notFoundException(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	// const body = req.body;
 	const user_email = req.query.user_email;
 	try {
@@ -22,3 +22,5 @@ export default async (req, res) => {
 		res.status(500).json({ message: err.message });
 	}
 };
+
+export default handler;

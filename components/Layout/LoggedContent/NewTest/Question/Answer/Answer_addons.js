@@ -8,7 +8,7 @@ function Answer_addons({ props }) {
 		if (!youtubePicked) return;
 		props.handleAnswerChange('answer_addon', youtubeUrl.current.value);
 		setyoutubePicked(false);
-	}, [youtubePicked]);
+	}, [youtubePicked, props]);
 
 	let LabelClassName = `label flex flex-col space-y-4 items-start md:flex md:flex-row md:space-y-0 md:items-center`;
 	if (props.type === 'youtube') {

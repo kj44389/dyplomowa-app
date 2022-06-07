@@ -1,30 +1,46 @@
 import _fetch from 'isomorphic-fetch';
 import { absoluteUrlPrefix } from 'next.config';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import ReactPlayer from 'react-player';
 import Answer_addons from './Answer_addons';
 import { v4 } from 'uuid';
+import Image from 'next/image';
 
 function Answer({ props }) {
 	const [answer, setAnswer] = useState(props.answer);
 	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const index = props.index;
-	let reader;
-
-	useEffect(() => {
-		reader = window.FileReader;
-	}, []);
 
 	useEffect(() => {
 		props.setanswers(answer);
-	}, [answer]);
+	}, [answer, props]);
 
+	const handleAnswerChange = useCallback(
+		async (what_changing, value) => {
+			answer[`${what_changing}`] = value;
+			setAnswer({ ...answer, [what_changing]: value });
+		},
+		[answer]
+	);
+	const handleAddFile = useCallback(
+		async (form) => {
+			const res = await _fetch(`${absoluteUrlPrefix}/api/test/uploadFile?`, {
+				method: 'POST',
+				body: form,
+			});
+			let { data, filepath } = await res.json();
+			filepath = filepath.replaceAll('\\', '/');
+			handleAnswerChange('answer_addon_src', filepath);
+		},
+		[handleAnswerChange]
+	);
 	// useEffect(() => {
 	// 	setAnswer({ ...answer, answer_addon_src: '', answer_addon: '' });
 	// }, [answer.answer_type]);
 
 	// FILE UPLOAD
 	useEffect(() => {
+		let reader = window.FileReader;
 		if (!answer.answer_addon) return;
 
 		const form = new FormData();
@@ -50,26 +66,11 @@ function Answer({ props }) {
 				};
 			}
 		}
-	}, [answer.answer_addon]);
+	}, [answer.answer_addon, answer.answer_type, handleAddFile, handleAnswerChange]);
 
 	useEffect(() => {
 		setUploadingStatus('done');
 	}, [answer.answer_addon_src]);
-
-	async function handleAddFile(form) {
-		const res = await _fetch(`${absoluteUrlPrefix}/api/test/uploadFile?`, {
-			method: 'POST',
-			body: form,
-		});
-		let { data, filepath } = await res.json();
-		filepath = filepath.replaceAll('\\', '/');
-		handleAnswerChange('answer_addon_src', filepath);
-	}
-
-	async function handleAnswerChange(what_changing, value) {
-		answer[`${what_changing}`] = value;
-		setAnswer({ ...answer, [what_changing]: value });
-	}
 
 	function renderAnswerSwitch(type) {
 		switch (type) {
@@ -97,10 +98,10 @@ function Answer({ props }) {
 						<span className='label-text'>Type:</span>
 					</label>
 					<select defaultValue={answer.answer_type || 'text'} className='select select-bordered w-full' onChange={(e) => handleAnswerChange('answer_type', e.target.value)}>
-						<option value='text'>Sam tekst</option>
-						<option value='with_audio'>Z dźwiękiem</option>
-						<option value='with_image'>Z obrazkiem</option>
-						<option value='with_youtube'>Z Filmikiem z YT</option>
+						<option value='text'>Text</option>
+						<option value='with_audio'>With audio</option>
+						<option value='with_image'>With image</option>
+						<option value='with_youtube'>With video (YouTube)</option>
 					</select>
 				</div>
 				<div className='flex w-full flex-row md:w-1/2 md:items-end md:justify-center'>
@@ -116,7 +117,9 @@ function Answer({ props }) {
 				</div>
 			</div>
 			<div className='flex items-center justify-center'>
-				{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && uploadingStatus !== 'pending' && <img src={`/${answer.answer_addon_src}`} className='max-w-sm' />}
+				{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && uploadingStatus !== 'pending' && (
+					<Image alt='Answer image' src={`/${answer.answer_addon_src}`} className='max-w-sm' />
+				)}
 				{answer.answer_addon_src !== '' && answer.answer_type == 'with_audio' && uploadingStatus !== 'pending' && (
 					<ReactPlayer url={`/${answer.answer_addon_src}`} height={70} controls />
 				)}

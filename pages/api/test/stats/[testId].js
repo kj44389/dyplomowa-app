@@ -5,7 +5,7 @@ function notFoundException(status, message) {
 	this.message = message;
 }
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	const test_id = req.query.testId;
 	try {
 		if (req.method === 'GET') {
@@ -39,3 +39,4 @@ export default async (req, res) => {
 		return res.status(err.status).json({ status: err.status, message: err.message });
 	}
 };
+export default handler;

@@ -10,9 +10,9 @@ export async function getServerSideProps(context) {
 	let testsFetch = await _fetch(`${absoluteUrlPrefix}/api/tests/${session.email}/`, {
 		method: 'GET',
 	});
-	let fetchedData = await testsFetch.json();
+	let fetchedDataForIds = await testsFetch.json();
 	let testsIds = [];
-	for (let i of fetchedData) {
+	for (let i of fetchedDataForIds) {
 		testsIds.push(i.test_id);
 	}
 
@@ -28,8 +28,8 @@ export async function getServerSideProps(context) {
 		const stats = await _fetch(`${absoluteUrlPrefix}/api/test/stats/${createdTests[i].test_id}`, { method: 'GET' })
 			.then((res) => res.json())
 			.then((data) => data?.Stats[0])
-			.catch((err) => console.log(err.json()));
-		createdTests[i].participants = stats.allcount || 0;
+			.catch((err) => console.log(err.statusText));
+		createdTests[i].participants = stats?.allcount || 0;
 	}
 	const availableTests = testData?.data.filter((test) => moment(test.test_date) > moment() && test.test_creator !== session.id);
 	const archivedTests = testData?.data.filter((test) => moment(test.test_date) < moment() && test.test_creator !== session.id);

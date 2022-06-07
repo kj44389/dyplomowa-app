@@ -19,7 +19,6 @@ export async function getServerSideProps(context) {
 		test_date: '',
 		test_name: '',
 		test_code: code,
-		test_total_points: 0,
 		test_type: 'PUBLIC',
 		emails: '',
 	};
@@ -33,9 +32,7 @@ export async function getServerSideProps(context) {
 			},
 		};
 	const session = await getSession(context);
-	console.log(session);
 	const testData = await fetch(`${absoluteUrlPrefix}/api/test/${testId}`).then((response) => response.json());
-	console.log(testData);
 	if (session.id != testData[0].test_creator || testData.length === 0)
 		return {
 			props: {
@@ -46,6 +43,7 @@ export async function getServerSideProps(context) {
 			},
 		};
 	const questionsData = await fetch(`${absoluteUrlPrefix}/api/questions?test_id=${testId}`).then((response) => response.json());
+	console.log(questionsData);
 	const questionsIds = [];
 	let index = 1;
 	for (let i of questionsData) {
@@ -74,7 +72,7 @@ export async function getServerSideProps(context) {
 	};
 }
 
-function newTest({ fetched_test, fetched_answers, fetched_questions, error }) {
+function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 	const [test, setTest] = useState(fetched_test);
 	const [questions, setquestions] = useState(fetched_questions);
 	const [answers, setanswers] = useState(fetched_answers);
@@ -146,11 +144,11 @@ function newTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 				<Layout>
 					<div className='flex flex-1 flex-col items-center justify-center pt-5 md:p-5'>
 						<div className='card bg-base-200 w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>
-							<h2 className='text-2xl'>Nowy test</h2>
+							<h2 className='text-2xl'>New Test</h2>
 							{/* test name */}
 							<div className='form-control'>
 								<label className='label'>
-									<span className='label-text'>Nazwa testu</span>
+									<span className='label-text'>Test Name</span>
 								</label>
 								<input
 									type='text'
@@ -163,7 +161,7 @@ function newTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 							{/* test date */}
 							<div className='form-control'>
 								<label className='label'>
-									<span className='label-text'>Data zakończenia testu</span>
+									<span className='label-text'>Test expiring date</span>
 								</label>
 								<input
 									type='datetime-local'
@@ -175,14 +173,14 @@ function newTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 							{/* test type */}
 							<div className='form-control'>
 								<label className='label'>
-									<span className='label-text'>Typ testu</span>
+									<span className='label-text'>Test Type</span>
 								</label>
 								<select
 									defaultValue={test.test_type || 'PUBLIC'}
 									className='select select-bordered w-full max-w-xs'
 									onChange={(e) => setTest({ ...test, test_type: e.target.value })}>
-									<option value='PUBLIC'>Publiczny</option>
-									<option value='PRIVATE'>Prywatny</option>
+									<option value='PUBLIC'>Public</option>
+									<option value='PRIVATE'>Private</option>
 								</select>
 							</div>
 							<div className='form-control'>
@@ -220,18 +218,18 @@ function newTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 						)}
 
 						<button onClick={handleAddQuestion} className='btn btn-outline btn-sm m-4'>
-							Dodaj Pytanie
+							Add Question
 						</button>
 						<button onClick={handleSubmit} className='btn btn fixed bottom-1 right-1 m-4 bg-green-500'>
-							Wyślij
+							Submit
 						</button>
 					</div>
 				</Layout>
 			) : (
-				<h1>BŁĄD! Taki test nie istnieje, lub nie masz uprawnień do jego edycji!</h1>
+				<h1>Error! Taki test nie istnieje, lub nie masz uprawnień do jego edycji!</h1>
 			)}
 		</>
 	);
 }
 
-export default newTest;
+export default NewTest;

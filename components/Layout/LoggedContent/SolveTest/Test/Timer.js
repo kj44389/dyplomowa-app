@@ -1,10 +1,8 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const Timer = ({ timeLeft, setTimeLeft, testState, questions, handleFinishTest, setTestState, setQuestions }) => {
-	let timer = null;
-
 	const calculateTimeLeft = (passedTime) => {
-		const timeElements = passedTime.split(":");
+		const timeElements = passedTime.split(':');
 		let minutes = parseInt(timeElements[0]);
 		let seconds = parseInt(timeElements[1]);
 
@@ -16,24 +14,20 @@ const Timer = ({ timeLeft, setTimeLeft, testState, questions, handleFinishTest, 
 
 	//timer
 	useEffect(() => {
-		// if (!fetchStatus) return;
-
+		let timer = null;
 		const { index } = testState;
 		let nextQuestionIndex = 0;
-		// if (timeLeft === "" || timer != null) return;
 		let localTimeLeft = timeLeft;
 
-		if (timeLeft === "00:00:00") {
+		if (timeLeft === '00:00:00') {
 			questions[index].question_time = localTimeLeft;
 			setQuestions((prev) => [...questions]);
 
-			nextQuestionIndex = questions.findIndex((question) => question.question_time !== "00:00:00");
+			nextQuestionIndex = questions.findIndex((question) => question.question_time !== '00:00:00');
 			if (nextQuestionIndex < 0) {
 				handleFinishTest();
 				return;
 			}
-
-
 			setTestState((prev) => ({ ...prev, index: nextQuestionIndex }));
 			setTimeLeft(questions[nextQuestionIndex].question_time);
 		}
@@ -47,19 +41,19 @@ const Timer = ({ timeLeft, setTimeLeft, testState, questions, handleFinishTest, 
 			clearTimeout(timer);
 			timer = null;
 		};
-	}, [timeLeft]);
+	}, [timeLeft, questions, setQuestions, setTimeLeft, testState, handleFinishTest, setTestState]);
 
 	return (
-		<div className="flex flex-1 justify-center items-center h-full w-full text-lg text-center">
+		<div className='flex h-full w-full flex-1 items-center justify-center text-center text-lg'>
 			<div>
-				<span className="font-mono text-4xl countdown">
-					<span style={{ "--value": parseInt(timeLeft.split(":")[0]) }}></span>
+				<span className='countdown font-mono text-4xl'>
+					<span style={{ '--value': parseInt(timeLeft.split(':')[0]) }}></span>
 				</span>
 				min
 			</div>
 			<div>
-				<span className="font-mono text-4xl countdown">
-					<span style={{ "--value": parseInt(timeLeft.split(":")[1]) }}></span>
+				<span className='countdown font-mono text-4xl'>
+					<span style={{ '--value': parseInt(timeLeft.split(':')[1]) }}></span>
 				</span>
 				sec
 			</div>

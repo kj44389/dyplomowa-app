@@ -2,12 +2,12 @@ import React from 'react';
 
 const CodeForm = ({ setTestCode, crawler }) => {
 	return (
-		<div className='card bg-base-200 mx-auto w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>		
+		<div className='card bg-base-200 m-3 mx-auto w-full max-w-sm p-5 md:max-w-[600px] md:p-10'>
 			<h2 className='text-2xl'>TEST CODE</h2>
 			{/* test name */}
 			<div className='form-control'>
 				<label className='label'>
-					<span className='label-text'>Podaj kod testu:</span>
+					<span className='label-text'>Type your test code here:</span>
 				</label>
 				<input
 					type='text'
@@ -23,6 +23,7 @@ const CodeForm = ({ setTestCode, crawler }) => {
 			<div className='form-control'>
 				<input
 					type='submit'
+					value='Enter'
 					onClick={(e) => {
 						crawler;
 					}}

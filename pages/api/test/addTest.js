@@ -1,6 +1,6 @@
 import sql_query from 'lib/db';
 
-export default async (req, res) => {
+const handler = async (req, res) => {
 	const body = JSON.parse(req.body);
 	const questions = body.questions;
 	const answers = body.answers;
@@ -59,3 +59,5 @@ export default async (req, res) => {
 	// 	res.status(500).json({ message: err.message });
 	// }
 };
+
+export default handler;

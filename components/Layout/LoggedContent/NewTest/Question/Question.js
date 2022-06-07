@@ -1,39 +1,55 @@
 import { absoluteUrlPrefix } from 'next.config';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Answer from './Answer/Answer';
 import Question_addons from './Question_addons';
 import ReactPlayer from 'react-player';
 import _fetch from 'isomorphic-fetch';
+import Image from 'next/image';
 import { v4 } from 'uuid';
 
 function Question({ props }) {
 	const [question, setquestion] = useState(props.question);
 	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const answers = props.answers;
-	let reader;
-
-	useEffect(() => {
-		reader = window.FileReader;
-	}, []);
 
 	//update questions state
 	useEffect(() => {
 		console.log('update');
 		props.setquestions(question);
-	}, [question]);
+	}, [question, props]);
+
+	const handleQuestionChange = useCallback(
+		async (what_changing, value) => {
+			question[`${what_changing}`] = value;
+			setquestion({ ...question, [what_changing]: value });
+		},
+		[question]
+	);
+	// FILE UPLOAD execution
+	const handleAddFile = useCallback(
+		async (form) => {
+			const res = await _fetch(`${absoluteUrlPrefix}/api/test/uploadFile?`, {
+				method: 'POST',
+				body: form,
+			});
+			let { data, filepath } = await res.json();
+			filepath = filepath.replaceAll('\\', '/');
+			handleQuestionChange('question_addon_src', filepath);
+		},
+		[handleQuestionChange]
+	);
 
 	// FILE UPLOAD preparing
 	useEffect(() => {
+		let reader = window.FileReader;
 		if (!question.question_addon) return;
 		const form = new FormData();
 		setUploadingStatus('pending');
 
 		if (question.question_type === 'with_youtube') {
 			handleQuestionChange('question_addon_src', question.question_addon);
-			console.log(question.question_addon, question.question_addon_src);
 		} else {
 			reader.readAsDataURL(question.question_addon);
-
 			if (question.question_type === 'with_audio') {
 				reader.onload = (e) => {
 					handleQuestionChange('question_addon_src', reader.result);
@@ -50,7 +66,7 @@ function Question({ props }) {
 			}
 		}
 		// console.log('question_addon', question.question_addon, question.question_addon_src, question);
-	}, [question.question_addon]);
+	}, [question.question_addon, handleAddFile, handleQuestionChange, question.question_type]);
 
 	// // reseting src after type change
 	// useEffect(() => {
@@ -61,18 +77,7 @@ function Question({ props }) {
 	useEffect(() => {
 		setUploadingStatus('done');
 		handleQuestionChange('question_addon', null);
-	}, [question.question_addon_src]);
-
-	// FILE UPLOAD execution
-	async function handleAddFile(form) {
-		const res = await _fetch(`${absoluteUrlPrefix}/api/test/uploadFile?`, {
-			method: 'POST',
-			body: form,
-		});
-		let { data, filepath } = await res.json();
-		filepath = filepath.replaceAll('\\', '/');
-		handleQuestionChange('question_addon_src', filepath);
-	}
+	}, [question.question_addon_src, handleQuestionChange]);
 
 	function renderQuestionSwitch(type) {
 		switch (type) {
@@ -89,10 +94,6 @@ function Question({ props }) {
 		}
 	}
 	//helper function
-	async function handleQuestionChange(what_changing, value) {
-		question[`${what_changing}`] = value;
-		setquestion({ ...question, [what_changing]: value });
-	}
 
 	return (
 		<div className='indicator mt-16 mb-12 flex h-auto w-full flex-col space-y-6'>
@@ -105,17 +106,17 @@ function Question({ props }) {
 				</label>
 				<select onChange={(e) => handleQuestionChange('question_type', e.target.value)} defaultValue={question.question_type || 'text_one'} className='select select-bordered w-full '>
 					{/* <select onChange={(e) => QuestionChange(question.question_id, 'question_type', e.target.value)} defaultValue='text_one' className='select select-bordered w-full '> */}
-					<option value='text_one'>Pytanie jednokrotnego wyboru</option>
-					<option value='text_many'>Pytanie wielokrotnego wyboru</option>
-					<option value='with_audio'>Z dźwiękiem</option>
-					<option value='with_image'>Z obrazkiem</option>
-					<option value='with_youtube'>Z Filmikiem z YT</option>
+					<option value='text_one'>Single choice</option>
+					<option value='text_many'>Multiple choice</option>
+					<option value='with_audio'>With audio </option>
+					<option value='with_image'>With image</option>
+					<option value='with_youtube'>With video (YouTube)</option>
 				</select>
 			</div>
 
 			<div className='flex items-center justify-center'>
 				{question.question_addon_src !== '' && uploadingStatus !== 'pending' && question.question_type == 'with_image' && (
-					<img src={`/${question.question_addon_src}`} className='max-w-sm' />
+					<Image alt='question image' src={`/${question.question_addon_src}`} className='max-w-sm' />
 				)}
 				{question.question_addon_src !== '' && uploadingStatus !== 'pending' && question.question_type == 'with_audio' && (
 					<ReactPlayer url={`/${question.question_addon_src}`} height={70} controls />
@@ -186,7 +187,7 @@ function Question({ props }) {
 					props.addAnswer(question.question_id);
 				}}
 				className='btn btn-outline btn-sm m-4 max-w-[10rem] self-center'>
-				Dodaj Odpowiedź
+				Add Answer
 			</button>
 			<div className='divide border-[1px] border-gray-700'></div>
 		</div>

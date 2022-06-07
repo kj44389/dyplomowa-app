@@ -8,7 +8,7 @@ import Timer from 'components/Layout/LoggedContent/SolveTest/Test/Timer';
 import _fetch from 'isomorphic-fetch';
 import { getSession, useSession } from 'next-auth/react';
 import { absoluteUrlPrefix } from 'next.config';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { v4 } from 'uuid';
 
 const getShuffledArr = (arr) => {
@@ -28,6 +28,8 @@ export async function getServerSideProps(context) {
 		return res.json();
 	});
 
+	console.log(testData);
+
 	let questionsIds = [];
 	let shuffledData = [];
 
@@ -36,13 +38,16 @@ export async function getServerSideProps(context) {
 			return res.json();
 		})
 		.then((data) => {
+			console.log(data);
 			if (data.status === 200) shuffledData = getShuffledArr(data.data);
 			for (let i of shuffledData) {
 				questionsIds.push(i.question_id);
 			}
+			console.log(shuffledData);
 			return shuffledData;
 		});
 	let testAnswers;
+	console.log(testQuestions, questionsIds);
 	if (questionsIds.length > 0 && testData) {
 		testAnswers = await _fetch(`${absoluteUrlPrefix}/api/question/${JSON.stringify(questionsIds)}/answers`, { method: 'GET' }).then((res) => {
 			return res.json();
@@ -60,7 +65,7 @@ export async function getServerSideProps(context) {
 	};
 }
 
-const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
+const Solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 	const { data: user } = useSession();
 	const [questions, setQuestions] = useState(testQuestions);
 	const [question, setQuestion] = useState({});
@@ -84,7 +89,7 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 
 	useEffect(() => {
 		if (showModal === true) setWarnings(warnings + 1);
-	}, [showModal]);
+	}, [showModal, warnings]);
 
 	useEffect(() => {
 		console.log(warnings);
@@ -93,7 +98,7 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 			setShowModal(false);
 			handleFinishTest();
 		}
-	}, [warnings]);
+	}, [warnings, handleFinishTest]);
 
 	useEffect(() => {
 		if (answers.length > 0) {
@@ -105,11 +110,11 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 				setQuestionsState((prev) => [...prev, { question_id: question_id, answer_id: answer_id, picked: false }]);
 			}
 		}
-	}, [answers]);
+	}, [answers, questions, testState]);
 
 	useEffect(() => {
 		setQuestion(questions[testState.index]);
-	}, [testState]);
+	}, [testState, questions]);
 
 	useEffect(() => {
 		if (results.length === 0) return;
@@ -124,7 +129,7 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 		setShowModal(false);
 	};
 
-	const handleFinishTest = () => {
+	const handleFinishTest = useCallback(() => {
 		setTimeRunOut(true);
 
 		_fetch(`${absoluteUrlPrefix}/api/test/results`, {
@@ -146,7 +151,7 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 			.then((data) => {
 				setResults([data]);
 			});
-	};
+	}, [questions, answers, questionsState, testData, user, Email, fullName]);
 
 	const handleQuestionStateChange = (question_id, answer_id) => {
 		const stateIndex = questionsState.findIndex((state) => {
@@ -216,7 +221,8 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 														<Answer
 															key={answer.answer_id}
 															answer={answer}
-															index={index}www
+															index={index}
+															www
 															disabled={question?.question_time === '00:00:00' ? true : false}
 															picked={questionsState[questionsState.findIndex((state) => state.answer_id === answer.answer_id)]?.picked}
 															onClick={handleQuestionStateChange}
@@ -293,7 +299,7 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 									<path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
 								</svg>
 								<h3 className='mb-5 text-lg font-normal text-gray-500 dark:text-gray-400'>
-									During test You can't use external help. Please finish your test by yourself or Your test will fail.
+									During test You can`&apos`t use external help. Please finish your test by yourself or Your test will fail.
 								</h3>
 								<button
 									data-modal-toggle='popup-modal'
@@ -302,7 +308,7 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 									onClick={(e) => {
 										handleModalClose();
 									}}>
-									I'm understand
+									I`&apos`m understand
 								</button>
 							</div>
 						</div>
@@ -313,4 +319,4 @@ const solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 	);
 };
 
-export default solve;
+export default Solve;
