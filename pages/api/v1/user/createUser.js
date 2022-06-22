@@ -11,7 +11,7 @@ const handler = async (req, res) => {
 
 		const query = 'INSERT INTO users (user_id, user_email, user_full_name, user_created_at, user_roles) values (?,?,?,?,?)';
 		const results = await sql_query(query, [data.id, data.email, data.fullname, data.created, data.roles]);
-		console.log(results);
+		results);
 		if (results.length == 0) {
 			throw new badRequestException(400, 'Bad Request, user not created!');
 		}

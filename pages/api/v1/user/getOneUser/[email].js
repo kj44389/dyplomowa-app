@@ -1,4 +1,4 @@
-import sql_query from '../../../../lib/db';
+import sql_query from "../../../../lib/db";
 
 function notFoundException(status, message) {
 	this.status = status;
@@ -10,9 +10,8 @@ const handler = async (req, res) => {
 		const query = `SELECT * FROM users WHERE user_email=?`;
 		const results = await sql_query(query, [req.query.email]);
 		if (results.length == 0) {
-			throw new notFoundException(404, 'User not found!');
+			throw new notFoundException(404, "User not found!");
 		}
-		console.log('getuser', await res.json(results[0]));
 		return await res.json(results[0]);
 	} catch (err) {
 		if (err instanceof notFoundException) {

@@ -1,4 +1,4 @@
-import sql_query from 'lib/db';
+import sql_query from "lib/db";
 
 function Exception(status, message) {
 	this.status = status;
@@ -8,13 +8,12 @@ function Exception(status, message) {
 const handler = async (req, res) => {
 	// const body = req.body;
 	const testId = req.query.testId;
-	console.log(testId);
 
 	try {
 		const query = `SELECT * FROM tests_questions WHERE test_id IN (?)`;
 		const results = await sql_query(query, [testId]);
 		if (results.length == 0) {
-			throw new Exception(404, 'Tests not found!');
+			throw new Exception(404, "Tests not found!");
 		}
 
 		let questions_ids = [];
@@ -26,7 +25,7 @@ const handler = async (req, res) => {
 		const queryResults = await sql_query(questionsQuery, [questions_ids]);
 
 		if (queryResults.length == 0) {
-			throw new Exception(404, 'Tests not found!');
+			throw new Exception(404, "Tests not found!");
 		}
 
 		return res.json({ status: 200, data: queryResults });

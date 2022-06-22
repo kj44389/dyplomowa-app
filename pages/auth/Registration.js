@@ -18,7 +18,7 @@ const Registration = () => {
 	const registrationHandler = async () => {
 		if (password !== repeatPassword) return;
 		if (email === '' || password === '' || repeatPassword === '' || repeatPassword === '' || repeatPassword === '') return;
-		const response = await _fetch('/api/user', {
+		const response = await _fetch('/api/v2/user', {
 			method: 'POST',
 			body: makeStringFromJson({ firstName, secondName, email, password }),
 			headers: { 'Content-Type': 'application/json' },

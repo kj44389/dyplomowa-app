@@ -1,7 +1,7 @@
-import sql_query from 'lib/db';
-import { v4 } from 'uuid';
-import moment from 'moment';
-import crypto from 'crypto';
+import { v4 } from "uuid";
+import moment from "moment";
+import crypto from "crypto";
+import { supabase } from "/lib/supabase";
 
 function Exception({ status, message }) {
 	this.status = status;
@@ -17,12 +17,20 @@ const post = async (body) => {
 	const { email, password, fullName } = body;
 	const encrypted = crypto.pbkdf2Sync(password, process.env.CRYPTO_SALT, 1000, 64, `sha512`).toString(`hex`);
 	try {
-		const query = 'INSERT INTO users (user_id, user_email, user_password, user_full_name, user_created_at, user_role) values (?,?,?,?,?,?)';
-		const results = await sql_query(query, [v4(), email, encrypted, fullName, moment().format('YYYY-MM-DD HH:mm'), '["USER"]']);
-		if (results.length == 0) {
-			throw new badRequestException(400, 'Bad Request, user not created!');
+		let { data, error } = await supabase.from("users").insert([
+			{
+				user_id: v4(),
+				user_email: email,
+				user_password: encrypted,
+				user_full_name: fullName,
+				user_created_at: moment().format("YYYY-MM-DD HH:mm"),
+				user_role: '["USER"]',
+			},
+		]);
+		if (error) {
+			throw new badRequestException(400, "Bad Request, user not created!");
 		}
-		return { status: 200, data: { ...body } };
+		return { status: 200, data: { ...data } };
 	} catch (err) {
 		return { status: err.status, message: err.message };
 	}
@@ -30,13 +38,16 @@ const post = async (body) => {
 
 const get = async (config) => {
 	try {
-		const query = `SELECT * FROM users WHERE ${config.by} = ?`;
-		const results = await sql_query(query, [config.by === 'user_id' ? config.user_id : config.user_email]);
+		const value = config.by === "user_id" ? config.user_id : config.user_email;
 
-		if (results.length === 0) {
-			throw new Exception({ status: 404, message: 'User not found!' });
+		let { data, error, status } = await supabase
+			.from("users")
+			.select(`user_id,user_email,user_full_name`)
+			.eq(config.by, value);
+		if (error) {
+			throw new Exception({ status: 404, message: "User not found!" });
 		}
-		return { status: 200, data: results };
+		return { status: 200, data: data[0] };
 	} catch (err) {
 		return { status: err.status, message: err.message };
 	}
@@ -44,9 +55,9 @@ const get = async (config) => {
 
 const handler = async (req, res) => {
 	let config = {
-		by: 'user_id',
-		user_id: '',
-		user_email: '',
+		by: "user_id",
+		user_id: "",
+		user_email: "",
 	};
 	if (req.query?.by) {
 		config.by = req.query.by;
@@ -58,12 +69,12 @@ const handler = async (req, res) => {
 		config.user_email = req.query.user_email;
 	}
 
-	res.setHeader('Content-Type', 'application/json');
+	res.setHeader("Content-Type", "application/json");
 	switch (req.method) {
-		case 'GET':
+		case "GET":
 			const getResponse = await get(config);
 			return res.status(getResponse.status).json(getResponse.data);
-		case 'POST':
+		case "POST":
 			const postRresponse = await post(req.body);
 			return res.content().status(postRresponse.status).json(postRresponse.data);
 	}
