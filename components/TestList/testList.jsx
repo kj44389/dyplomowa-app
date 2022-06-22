@@ -53,7 +53,7 @@ function TestList({ header, testDone, tests, creator = false, handleDelete = nul
 								{CheckIfTestDone(test_id) >= 0 || creator ? (
 								//if user is a creator of the test
 									<div className='tooltip tooltip-bottom' data-tip='stats'>
-										<Link href={`/test/${test_id}/stats`} passHref>
+										<Link href={`/test/${test_id}/stats`} passHref prefetch={true}>
 											<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-700/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
 												<ChartBarIcon className='h-5 w-5 ' />
 											</button>
@@ -63,7 +63,7 @@ function TestList({ header, testDone, tests, creator = false, handleDelete = nul
 									// if tests is not done, time not passed and user is not a creator
 									!CheckIfDatePassed(test_date) && (
 										<div className='tooltip tooltip-bottom' data-tip='join'>
-											<Link href={`/test/solve/${test_id}`} passHref>
+												<Link href={`/test/solve/${test_id}`} passHref prefetch={true}>
 												<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-700/60 p-2 transition-colors hover:bg-gray-800 hover:text-green-500'>
 													<PlayIcon className='h-5 w-5 ' />
 												</button>
@@ -85,7 +85,7 @@ function TestList({ header, testDone, tests, creator = false, handleDelete = nul
 										</div>
 										<div className='tooltip tooltip-bottom' data-tip='edit'>
 											{/* <Link href={`/test/${test_id}/testStats`}> */}
-											<Link href={`/test/newTest?edit=true&test_id=${test_id}`} passHref>
+											<Link href={`/test/newTest?edit=true&test_id=${test_id}`} passHref prefetch={true}>
 												<button className='flex h-9 w-9 items-center justify-center rounded-md bg-gray-800/60 p-2  transition-colors hover:bg-gray-800 hover:text-red-500'>
 													<PencilIcon className='h-5 w-5 ' />
 												</button>

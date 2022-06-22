@@ -168,6 +168,7 @@ const Solve = ({ testData, testQuestions, testAnswers, fullName, Email }) => {
 	};
 
 	useEffect(() => {
+		// TODO: fix a bug - when modal is visible there is react loop in hooks.
 		if (warnings >= 3 && finishStatus === false) {
 			window.removeEventListener("blur", () => null);
 			setShowModal(false);

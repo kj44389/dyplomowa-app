@@ -7,7 +7,7 @@ import { absoluteUrlPrefix } from 'next.config';
 
 export async function getServerSideProps(context) {
 	const session = await getSession(context);
-	let testsFetch = await _fetch(`${absoluteUrlPrefix}/api/v2/tests/${session.email}/`, {
+	let testsFetch = await _fetch(`${absoluteUrlPrefix}/api/v2/tests/${session.email}`, {
 		method: 'GET',
 	});
 	let fetchedDataForIds = await testsFetch.json();

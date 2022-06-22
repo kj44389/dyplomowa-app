@@ -20,7 +20,7 @@ export async function getServerSideProps(context) {
 		})
 		.then((data) => {
 			let ids = [];
-			for (let i of data) {
+			for (let i of data.data) {
 				ids.push(i.test_id);
 			}
 			return ids;

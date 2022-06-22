@@ -1,4 +1,4 @@
-import sql_query from "../../../../lib/db";
+import sql_query from "lib/db";
 
 function notFoundException(status, message) {
 	this.status = status;
