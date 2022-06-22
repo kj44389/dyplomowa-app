@@ -9,7 +9,7 @@ function notFoundException(status, message) {
 const handler = async (req, res) => {
 	const user_email = req.query.user_email;
 	try {
-		let { data, error, status } = await supabase.from("test_participants").select().eq("user_email", user_email);
+		let { data, error, status } = await supabase.from("test_participants").select("*").eq("user_email", user_email);
 		if (error) throw new notFoundException(404, "Tests not found!");
 
 		res.json({ status: 200, data: data });
