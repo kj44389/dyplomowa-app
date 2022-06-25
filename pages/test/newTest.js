@@ -10,6 +10,9 @@ import { toast } from 'react-hot-toast';
 import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import { filesContext } from 'contexts/filesContext';
+import { supabase } from '../../lib/supabase';
+
 export async function getServerSideProps(context) {
 	const ifEdit = context.query?.edit;
 	const testId = context.query?.test_id;
@@ -87,11 +90,8 @@ export async function getServerSideProps(context) {
 
 function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 	const [test, setTest] = useState(fetched_test);
-	console.log('🚀 ~ file: newTest.js ~ line 93 ~ test', test);
 	const [questions, setquestions] = useState(fetched_questions);
-	console.log('🚀 ~ file: newTest.js ~ line 95 ~ questions', questions);
 	const [answers, setanswers] = useState(fetched_answers);
-	console.log('🚀 ~ file: newTest.js ~ line 97 ~ answers', answers);
 	const router = useRouter();
 	const edit = router.query.edit;
 	// useEffect(() => {
@@ -142,6 +142,25 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 			return item;
 		});
 		return tempArray;
+	};
+	const handleFileUpload = async (file) => {
+		const { data: checkIfExists, error: checkIfExistsError } = await supabase.storage.getBucket('files');
+		if (checkIfExistsError) {
+			const { data, error } = await supabase.storage.createBucket('files', { public: true });
+		}
+		let response = supabase.storage.from('files').upload(`${test.test_id}/${file?.name}`, file, {
+			cacheControl: '3600',
+			upsert: false,
+		});
+		// let form = new FormData();
+		// // let reader = new FileReader();
+		// form.append(`${file.name}`, file);
+		// // reader.readAsDataURL(file);
+		// // reader.onload = function () {
+		// // console.log(reader.result);
+		// response = fetch(`${absoluteUrlPrefix}/api/v2/test/uploadFile?test_id=${test.test_id}`, { method: 'POST', body: form, headers: { 'Content-Type': 'multipart/form-data' } });
+		toast.promise(response, { loading: `File ${file.name} is uploaded..`, success: `File uploaded successfully!`, error: 'Something went wrong!' });
+		// // };
 	};
 	async function handleSubmit() {
 		const body = JSON.stringify({
@@ -222,26 +241,27 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 							</div>
 						</div>
 
-						{questions.length > 0 && (
-							<div className='card bg-base-200 mt-3 mb-3 w-full max-w-sm p-1 md:max-w-[600px] md:p-10'>
-								{questions.map((question) => {
-									return (
-										<Question
-											props={{
-												questions: questions,
-												question: question,
-												setquestions: handleQuestionsUpdate,
-												answers: answers,
-												addAnswer: handleAddAnswer,
-												setanswers: handleAnswersUpdate,
-											}}
-											key={question.id}
-										/>
-									);
-								})}
-							</div>
-						)}
-
+						<filesContext.Provider value={handleFileUpload}>
+							{questions.length > 0 && (
+								<div className='card bg-base-200 mt-3 mb-3 w-full max-w-sm p-1 md:max-w-[600px] md:p-10'>
+									{questions.map((question) => {
+										return (
+											<Question
+												props={{
+													questions: questions,
+													question: question,
+													setquestions: handleQuestionsUpdate,
+													answers: answers,
+													addAnswer: handleAddAnswer,
+													setanswers: handleAnswersUpdate,
+												}}
+												key={question.id}
+											/>
+										);
+									})}
+								</div>
+							)}
+						</filesContext.Provider>
 						<button onClick={handleAddQuestion} className='btn btn-outline btn-sm m-4'>
 							Add Question
 						</button>

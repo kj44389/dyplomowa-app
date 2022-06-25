@@ -39,6 +39,7 @@ function Question_addons({ props }) {
 				{(props.type === 'audio' || props.type === 'image') && (
 					<input
 						type='file'
+						accept='image/*,audio/*'
 						className='file:border-primarygreen text-gray-400 file:mr-4 file:rounded-xl file:border-2 file:border-solid file:bg-transparent file:py-2 file:px-4 file:text-sm file:font-semibold file:text-gray-300 hover:file:bg-gray-800/30'
 						onChange={(e) => {
 							props.handleQuestionChange('question_addon', e.target.files[0]);

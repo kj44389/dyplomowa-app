@@ -262,8 +262,6 @@ const handler = async (req, res) => {
 			throw new Exception(405, "Method not allowed");
 		}
 	} catch (err) {
-		console.log("🚀 ~ file: [testId].js ~ line 260 ~ err", err);
-
 		res.status(err.status).json({ status: err.status, statusText: err.message });
 	}
 };
