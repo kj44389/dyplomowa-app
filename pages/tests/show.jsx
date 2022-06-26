@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context) {
-	context.res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+	context.res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=61');
 	const session = await getSession(context);
 	let testsFetch = await _fetch(`${absoluteUrlPrefix}/api/v2/tests/${session.email}`, {
 		method: 'GET',

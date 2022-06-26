@@ -7,7 +7,6 @@ function Exception(status, message) {
 }
 
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 'max-age=60');
 	const testId = req.query.testId;
 
 	try {

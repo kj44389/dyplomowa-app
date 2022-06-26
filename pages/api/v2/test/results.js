@@ -17,7 +17,7 @@ function Exception(status, message) {
 }
 
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 'max-age=60');
+	res.setHeader('Cache-Control', 'max-age=10');
 	if (req.method !== 'POST') res.status(402).json({ message: 'method not allowed' });
 
 	const body = JSON.parse(req.body);

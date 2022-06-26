@@ -6,7 +6,7 @@ function notFoundException(status, message) {
 	this.message = message;
 }
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 's-maxage=60');
+
 	const questions_ids = JSON.parse(req.query.questions_ids);
 
 	try {

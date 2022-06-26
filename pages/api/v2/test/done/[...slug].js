@@ -7,7 +7,7 @@ function Exception({ status, message }) {
 }
 
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 'max-age=60');
+	res.setHeader('Cache-Control', 'max-age=10');
 	const slug = req.query.slug;
 	try {
 		if (slug.length > 3) {

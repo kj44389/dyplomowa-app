@@ -6,7 +6,7 @@ function Exception(status, message) {
 	this.message = message;
 }
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 's-maxage=60');
+	res.setHeader('Cache-Control', 's-maxage=10');
 	if (req.method !== 'GET') {
 		throw new Exception();
 	}

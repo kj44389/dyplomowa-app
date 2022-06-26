@@ -11,7 +11,6 @@ import { useRouter } from 'next/router';
 import NameEmailForm from 'components/Layout/LoggedContent/SolveTest/CodeNameForm/NameEmailForm';
 
 export async function getServerSideProps(context) {
-	context.res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
 	const session = await getSession(context);
 	if (!session) return { props: { tests: null } };
 	let tests = [];
