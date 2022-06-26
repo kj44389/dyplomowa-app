@@ -1,9 +1,9 @@
-import _fetch from "isomorphic-fetch";
-import moment from "moment";
-import { getSession } from "next-auth/react";
-import { absoluteUrlPrefix } from "next.config";
-import { v4 } from "uuid";
-import { supabase } from "lib/supabase";
+import _fetch from 'isomorphic-fetch';
+import moment from 'moment';
+import { getSession } from 'next-auth/react';
+import { absoluteUrlPrefix } from 'next.config';
+import { v4 } from 'uuid';
+import { supabase } from 'lib/supabase';
 
 const findQuestionIndex = (questions, id) => {
 	return questions.findIndex((question) => {
@@ -17,7 +17,8 @@ function Exception(status, message) {
 }
 
 const handler = async (req, res) => {
-	if (req.method !== "POST") res.status(402).json({ message: "method not allowed" });
+	res.setHeader('Cache-Control', 's-maxage=86400');
+	if (req.method !== 'POST') res.status(402).json({ message: 'method not allowed' });
 
 	const body = JSON.parse(req.body);
 	const { questions, answers, questionsState, test_id, user_email, user_full_name } = body;
@@ -28,7 +29,7 @@ const handler = async (req, res) => {
 	let arrayOfAnswers = [];
 	const done_id = v4();
 
-	console.log("🚀 ~ file: results.js ~ line 33 ~ answer", answers);
+	console.log('🚀 ~ file: results.js ~ line 33 ~ answer', answers);
 	const correctAnswers = answers.filter((answer) => {
 		return answer?.answer.answer_correct === true;
 	});
@@ -62,7 +63,7 @@ const handler = async (req, res) => {
 		const finished_at = moment().format();
 		const passed = pointsScored >= pointsTotal / 2;
 
-		let { data, error } = await supabase.from("test_done").insert([
+		let { data, error } = await supabase.from('test_done').insert([
 			{
 				done_id: done_id,
 				test_id: test_id,
@@ -74,10 +75,10 @@ const handler = async (req, res) => {
 				passed: passed ? 1 : 0,
 			},
 		]);
-		console.log("🚀 ~ file: results.js ~ line 76 ~ passed", passed);
-		console.log("🚀 ~ file: results.js ~ line 76 ~ pointsTotal", pointsTotal);
-		console.log("🚀 ~ file: results.js ~ line 76 ~ pointsScored", pointsScored);
-		console.log("🚀 ~ file: results.js ~ line 66 ~ error", error);
+		console.log('🚀 ~ file: results.js ~ line 76 ~ passed', passed);
+		console.log('🚀 ~ file: results.js ~ line 76 ~ pointsTotal', pointsTotal);
+		console.log('🚀 ~ file: results.js ~ line 76 ~ pointsScored', pointsScored);
+		console.log('🚀 ~ file: results.js ~ line 66 ~ error', error);
 
 		if (error) throw new Exception(500, "Couldn't insert test done'");
 		const done_answer_id = v4();
@@ -90,16 +91,14 @@ const handler = async (req, res) => {
 				picked: answer[3],
 			});
 		}
-		let { data: doneAnswers, error: doneAnswersError } = await supabase
-			.from("test_done_answers")
-			.insert(arrayOfJsons);
-		console.log("🚀 ~ file: results.js ~ line 93 ~ doneAnswersError", doneAnswersError);
+		let { data: doneAnswers, error: doneAnswersError } = await supabase.from('test_done_answers').insert(arrayOfJsons);
+		console.log('🚀 ~ file: results.js ~ line 93 ~ doneAnswersError', doneAnswersError);
 		if (doneAnswersError) {
 			throw new Exception(500, "Couldn't associate answers with test done");
 		}
 
 		if (session) {
-			const getData = await fetch(`${absoluteUrlPrefix}/api/v2/metadata/${user_email}`, { method: "GET" })
+			const getData = await fetch(`${absoluteUrlPrefix}/api/v2/metadata/${user_email}`, { method: 'GET' })
 				.then((response) => {
 					return response.text();
 				})
@@ -117,9 +116,9 @@ const handler = async (req, res) => {
 					tests_total: 1,
 				});
 				const response = await _fetch(`${absoluteUrlPrefix}/api/v2/metadata/${user_email}`, {
-					method: "POST",
+					method: 'POST',
 					body: body,
-					headers: { "Content-Type": "application/json" },
+					headers: { 'Content-Type': 'application/json' },
 				});
 				if (response.status === 200) {
 					return res.status(200).json({
@@ -141,9 +140,9 @@ const handler = async (req, res) => {
 					tests_total: tests_total + 1,
 				});
 				const response = await _fetch(`${absoluteUrlPrefix}/api/v2/metadata/${user_email}`, {
-					method: "PATCH",
+					method: 'PATCH',
 					body: body,
-					headers: { "Content-Type": "application/json" },
+					headers: { 'Content-Type': 'application/json' },
 				});
 				if (response.status === 200) {
 					return res.status(200).json({

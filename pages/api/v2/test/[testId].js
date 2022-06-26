@@ -14,6 +14,7 @@ const deleteSQL = async ({ query, values }) => {
 };
 
 const handler = async (req, res) => {
+	res.setHeader('Cache-Control', 's-maxage=86400');
 	const session = await getSession({ req });
 	const test_id = req.query.testId;
 	try {

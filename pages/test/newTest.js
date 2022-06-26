@@ -14,6 +14,7 @@ import { filesContext } from 'contexts/filesContext';
 import { supabase } from 'lib/supabase';
 
 export async function getServerSideProps(context) {
+	context.res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
 	const ifEdit = context.query?.edit;
 	const testId = context.query?.test_id;
 	const test_id = v4();

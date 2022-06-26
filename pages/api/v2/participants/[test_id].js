@@ -1,5 +1,5 @@
-import sql_query from "lib/db";
-import { supabase } from "lib/supabase";
+import sql_query from 'lib/db';
+import { supabase } from 'lib/supabase';
 
 function Exception(status, message) {
 	this.status = status;
@@ -7,18 +7,16 @@ function Exception(status, message) {
 }
 
 const handler = async (req, res) => {
-	if (req.method !== "GET") {
-		throw new Exception(405, "not authorized");
+	res.setHeader('Cache-Control', 's-maxage=86400');
+	if (req.method !== 'GET') {
+		throw new Exception(405, 'not authorized');
 	}
 	const test_id = req.query.test_id;
 
 	try {
-		let { data, error, status } = await supabase
-			.from("test_participants")
-			.select("user_email")
-			.eq("test_id", test_id);
+		let { data, error, status } = await supabase.from('test_participants').select('user_email').eq('test_id', test_id);
 		if (error) {
-			throw new Exception(404, "Participants not found!");
+			throw new Exception(404, 'Participants not found!');
 		}
 		let emails = [];
 		for (let i of data) emails.push(i.user_email);

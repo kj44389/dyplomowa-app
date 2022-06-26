@@ -1,5 +1,5 @@
-import sql_query from "lib/db";
-import { supabase } from "lib/supabase";
+import sql_query from 'lib/db';
+import { supabase } from 'lib/supabase';
 
 function notFoundException(status, message) {
 	this.status = status;
@@ -7,10 +7,11 @@ function notFoundException(status, message) {
 }
 
 const handler = async (req, res) => {
+	res.setHeader('Cache-Control', 's-maxage=86400');
 	const user_email = req.query.user_email;
 	try {
-		let { data, error, status } = await supabase.from("test_participants").select("*").eq("user_email", user_email);
-		if (error) throw new notFoundException(404, "Tests not found!");
+		let { data, error, status } = await supabase.from('test_participants').select('*').eq('user_email', user_email);
+		if (error) throw new notFoundException(404, 'Tests not found!');
 
 		res.json({ status: 200, data: data });
 	} catch (err) {

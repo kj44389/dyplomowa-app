@@ -1,20 +1,21 @@
-import Layout from "components/Layout/Layout";
-import _fetch from "isomorphic-fetch";
-import { getSession } from "next-auth/react";
-import { absoluteUrlPrefix } from "next.config";
-import { useState } from "react";
-import CodeForm from "components/Layout/LoggedContent/SolveTest/CodeForm/CodeForm";
+import Layout from 'components/Layout/Layout';
+import _fetch from 'isomorphic-fetch';
+import { getSession } from 'next-auth/react';
+import { absoluteUrlPrefix } from 'next.config';
+import { useState } from 'react';
+import CodeForm from 'components/Layout/LoggedContent/SolveTest/CodeForm/CodeForm';
 
-import moment from "moment";
-import ErrorPage from "components/Layout/Error/ErrorPage";
-import { useRouter } from "next/router";
-import NameEmailForm from "components/Layout/LoggedContent/SolveTest/CodeNameForm/NameEmailForm";
+import moment from 'moment';
+import ErrorPage from 'components/Layout/Error/ErrorPage';
+import { useRouter } from 'next/router';
+import NameEmailForm from 'components/Layout/LoggedContent/SolveTest/CodeNameForm/NameEmailForm';
 
 export async function getServerSideProps(context) {
+	context.res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
 	const session = await getSession(context);
 	if (!session) return { props: { tests: null } };
 	let tests = [];
-	const testsIds = await _fetch(`${absoluteUrlPrefix}/api/v2/tests/${session.email}`, { method: "GET" })
+	const testsIds = await _fetch(`${absoluteUrlPrefix}/api/v2/tests/${session.email}`, { method: 'GET' })
 		.then((res) => {
 			return res.json();
 		})
@@ -26,10 +27,7 @@ export async function getServerSideProps(context) {
 			return ids;
 		});
 
-	const fetchedTests = await _fetch(
-		`${absoluteUrlPrefix}/api/v2/tests?by=test_id&tests=${JSON.stringify(testsIds)} `,
-		{ method: "GET" }
-	)
+	const fetchedTests = await _fetch(`${absoluteUrlPrefix}/api/v2/tests?by=test_id&tests=${JSON.stringify(testsIds)} `, { method: 'GET' })
 		.then((res) => {
 			return res.json();
 		})
@@ -40,14 +38,14 @@ export async function getServerSideProps(context) {
 
 const Solve = ({ tests }) => {
 	const router = useRouter();
-	const [formTestCode, setFormTestCode] = useState("");
+	const [formTestCode, setFormTestCode] = useState('');
 
 	const [testData, setTestData] = useState([]);
 	const [testFound, setTestFound] = useState(false);
 	const [emailNameForm, setEmailNameForm] = useState({
-		name: "",
-		surname: "",
-		email: "",
+		name: '',
+		surname: '',
+		email: '',
 	});
 
 	const testCrawler = () => {
@@ -71,11 +69,7 @@ const Solve = ({ tests }) => {
 				return data.data[0].test_id;
 			});
 		if (!testId) router.push(`/test/solve`);
-		router.push(
-			`/test/solve/${testId}?name=${emailNameForm?.name}&surname=${emailNameForm?.surname}&email=${JSON.stringify(
-				emailNameForm?.email
-			)}`
-		);
+		router.push(`/test/solve/${testId}?name=${emailNameForm?.name}&surname=${emailNameForm?.surname}&email=${JSON.stringify(emailNameForm?.email)}`);
 	};
 
 	return (
@@ -84,17 +78,12 @@ const Solve = ({ tests }) => {
 				tests ? (
 					<CodeForm key={`codeFormKey`} setTestCode={setFormTestCode} crawler={testCrawler()} />
 				) : (
-					<NameEmailForm
-						setEmailNameForm={setEmailNameForm}
-						setTestCode={setFormTestCode}
-						emailNameForm={emailNameForm}
-						formSubmit={handleRedirectWithFormData}
-					/>
+					<NameEmailForm setEmailNameForm={setEmailNameForm} setTestCode={setFormTestCode} emailNameForm={emailNameForm} formSubmit={handleRedirectWithFormData} />
 				)
 			) : moment(testData?.test_date).diff(moment()) > 0 ? (
 				handleRedirect()
 			) : (
-				<ErrorPage title={"Time has passed!"} message={"Time for solving this test has passed"} />
+				<ErrorPage title={'Time has passed!'} message={'Time for solving this test has passed'} />
 			)}
 		</Layout>
 	);

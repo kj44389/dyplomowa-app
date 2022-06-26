@@ -1,6 +1,7 @@
 const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
+	Cache-Control: public, max-age=31536000, immutable
 	images: {
 		domains: ['ralyngppqounuvyyieux.supabase.co'],
 	},
