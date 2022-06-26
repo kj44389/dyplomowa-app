@@ -29,7 +29,6 @@ const handler = async (req, res) => {
 	let arrayOfAnswers = [];
 	const done_id = v4();
 
-	console.log('🚀 ~ file: results.js ~ line 33 ~ answer', answers);
 	const correctAnswers = answers.filter((answer) => {
 		return answer?.answer.answer_correct === true;
 	});
@@ -75,10 +74,6 @@ const handler = async (req, res) => {
 				passed: passed ? 1 : 0,
 			},
 		]);
-		console.log('🚀 ~ file: results.js ~ line 76 ~ passed', passed);
-		console.log('🚀 ~ file: results.js ~ line 76 ~ pointsTotal', pointsTotal);
-		console.log('🚀 ~ file: results.js ~ line 76 ~ pointsScored', pointsScored);
-		console.log('🚀 ~ file: results.js ~ line 66 ~ error', error);
 
 		if (error) throw new Exception(500, "Couldn't insert test done'");
 		const done_answer_id = v4();
@@ -92,7 +87,6 @@ const handler = async (req, res) => {
 			});
 		}
 		let { data: doneAnswers, error: doneAnswersError } = await supabase.from('test_done_answers').insert(arrayOfJsons);
-		console.log('🚀 ~ file: results.js ~ line 93 ~ doneAnswersError', doneAnswersError);
 		if (doneAnswersError) {
 			throw new Exception(500, "Couldn't associate answers with test done");
 		}

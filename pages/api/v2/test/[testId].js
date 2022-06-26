@@ -185,8 +185,6 @@ const handler = async (req, res) => {
 
 			//upserting questions / answers records
 
-			console.log('🚀 ~ file: [testId].js ~ line 178 ~ handler ~ questions', questions);
-			console.log('🚀 ~ file: [testId].js ~ line 180 ~ handler ~ answers', answers);
 
 			let { data: questionPush, error: questionError } = await supabase.from('questions').upsert(questions);
 			let { data: answerPush, error: answerError } = await supabase.from('answers').upsert(answers);

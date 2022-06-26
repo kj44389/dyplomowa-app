@@ -34,8 +34,8 @@ export async function getServerSideProps(context) {
 	for (let i in createdTests) {
 		const stats = await _fetch(`${absoluteUrlPrefix}/api/v2/test/stats/${createdTests[i].test_id}`, { method: 'GET' })
 			.then((res) => res.json())
-			.then((data) => data?.Stats[0])
-			.catch((err) => console.log(err.statusText));
+			.then((data) => (data?.Stats ? data?.Stats[0] : null));
+
 		createdTests[i].participants = stats?.allcount || 0;
 	}
 	const availableTests = testData?.data.filter((test) => moment(test.test_date) > moment() && test.test_creator !== session.id);
@@ -82,7 +82,6 @@ function Show({ testData, createdTests, availableTests, archivedTests, testDoneD
 	useEffect(() => {
 		if (confirmation === true) {
 			deleteTest();
-			console.log('delete', testIdToDelete);
 			setConfirmation(false);
 		}
 	}, [confirmation, testIdToDelete]);
