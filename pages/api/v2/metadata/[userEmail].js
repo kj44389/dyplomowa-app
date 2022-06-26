@@ -7,7 +7,7 @@ function Exception({ status, message }) {
 	this.message = message;
 }
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 's-maxage=86400');
+	res.setHeader('Cache-Control', 's-maxage=60');
 	try {
 		const userEmail = req.query.userEmail;
 

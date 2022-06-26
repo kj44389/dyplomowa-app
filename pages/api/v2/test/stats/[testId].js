@@ -6,7 +6,7 @@ function notFoundException(status, message) {
 }
 
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 's-maxage=86400');
+	res.setHeader('Cache-Control', 'max-age=86400');
 	const test_id = req.query.testId;
 	try {
 		if (req.method === 'GET') {

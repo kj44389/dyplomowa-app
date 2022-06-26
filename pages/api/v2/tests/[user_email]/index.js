@@ -7,7 +7,7 @@ function notFoundException(status, message) {
 }
 
 const handler = async (req, res) => {
-	res.setHeader('Cache-Control', 's-maxage=86400');
+	res.setHeader('Cache-Control', 'max-age=60');
 	const user_email = req.query.user_email;
 	try {
 		let { data, error, status } = await supabase.from('test_participants').select('*').eq('user_email', user_email);
