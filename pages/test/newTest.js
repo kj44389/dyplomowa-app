@@ -11,7 +11,7 @@ import { getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 import { filesContext } from 'contexts/filesContext';
-import { supabase } from '../../lib/supabase';
+import { supabase } from 'lib/supabase';
 
 export async function getServerSideProps(context) {
 	const ifEdit = context.query?.edit;
@@ -59,6 +59,10 @@ export async function getServerSideProps(context) {
 		questionsIds.push(i.question_id);
 		i.id = index;
 		++index;
+		// if (i.question_type === 'with_audio' || i.question_type === 'with_image') {?
+		// const { publicURL, error } = await supabase.storage.from('files').getPublicUrl(`${test_id}/${i.question_id}`);
+		// i.question_addon_src = publicURL;
+		// }
 	}
 	let answersDataTemp = await fetch(`${absoluteUrlPrefix}/api/v2/answers/${JSON.stringify(questionsIds)}`).then((response) => response.json());
 	index = 1;
@@ -143,12 +147,13 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 		});
 		return tempArray;
 	};
-	const handleFileUpload = async (file) => {
+	const handleFileUpload = async ({ elementSetter, elementType, file, pathBegin }) => {
 		const { data: checkIfExists, error: checkIfExistsError } = await supabase.storage.getBucket('files');
+		const fileName = file?.name;
 		if (checkIfExistsError) {
 			const { data, error } = await supabase.storage.createBucket('files', { public: true });
 		}
-		let response = supabase.storage.from('files').upload(`${test.test_id}/${file?.name}`, file, {
+		let response = supabase.storage.from('files').upload(`${test.test_id}/${pathBegin}/${fileName}`, file, {
 			cacheControl: '3600',
 			upsert: false,
 		});
@@ -159,8 +164,13 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 		// // reader.onload = function () {
 		// // console.log(reader.result);
 		// response = fetch(`${absoluteUrlPrefix}/api/v2/test/uploadFile?test_id=${test.test_id}`, { method: 'POST', body: form, headers: { 'Content-Type': 'multipart/form-data' } });
-		toast.promise(response, { loading: `File ${file.name} is uploaded..`, success: `File uploaded successfully!`, error: 'Something went wrong!' });
+		toast.promise(response, { loading: `File ${file.name} uploading...`, success: `File uploaded successfully!`, error: 'Something went wrong!' });
 		// // };
+
+		response.finally(async () => {
+			let { publicURL, error } = await supabase.storage.from('files').getPublicUrl(`${test.test_id}/${pathBegin}/${fileName}`);
+			elementSetter(`${elementType}_addon_src`, publicURL);
+		});
 	};
 	async function handleSubmit() {
 		const body = JSON.stringify({

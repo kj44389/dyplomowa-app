@@ -25,7 +25,7 @@ const WarningModal = ({ handleModalClose }) => {
 							<path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
 						</svg>
 						<h3 className='mb-5 text-lg font-normal text-gray-500 dark:text-gray-400'>
-							During test You can't use external help. Please finish your test by yourself or Your test will fail.
+							During test You can`&apos;`t use external help. Please finish your test by yourself or Your test will fail.
 						</h3>
 						<button
 							data-modal-toggle='popup-modal'
@@ -34,7 +34,7 @@ const WarningModal = ({ handleModalClose }) => {
 							onClick={(e) => {
 								handleModalClose();
 							}}>
-							I'm understand
+							I`&apos;`m understand
 						</button>
 					</div>
 				</div>

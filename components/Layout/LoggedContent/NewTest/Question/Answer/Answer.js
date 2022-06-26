@@ -26,23 +26,24 @@ function Answer({ props }) {
 	);
 
 	useEffect(() => {
-		setAnswer({ ...answer, answer_addon_src: '', answer_addon: '' });
-	}, [answer.answer_type]);
-
-	useEffect(() => {
-		let reader = new FileReader();
-		if (!answer.answer_addon) return;
+		// let reader = new FileReader();
+		if (!answer.answer_addon || answer.answer_addon === '{}') return;
 
 		if (answer.answer_type === 'with_youtube') {
 			handleAnswerChange('answer_addon_src', answer.answer_addon);
-		} else {
-			reader.readAsDataURL(answer.answer_addon);
-			reader.onload = (e) => {
-				handleAnswerChange('answer_addon_src', reader.result);
-				fileUpload(answer.answer_addon);
-			};
+		} else if (answer.answer_type === 'with_audio' || answer.answer_type === 'with_image') {
+			// reader.readAsDataURL(answer.answer_addon);
+			// reader.onload = (e) => {
+			// handleAnswerChange('answer_addon_src', reader.result);
+
+			fileUpload({
+				elementSetter: handleAnswerChange,
+				elementType: 'answer',
+				file: answer.answer_addon,
+				pathBegin: `${props.question_id}/${answer.answer_id}`,
+			});
 		}
-	}, [answer.answer_addon, answer.answer_type]);
+	}, [answer.answer_addon]);
 
 	function renderAnswerSwitch(type) {
 		switch (type) {

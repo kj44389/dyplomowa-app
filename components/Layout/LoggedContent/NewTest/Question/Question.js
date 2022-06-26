@@ -46,25 +46,33 @@ function Question({ props }) {
 
 	// // FILE UPLOAD preparin
 	useEffect(() => {
-		let reader = new FileReader();
-		if (!question.question_addon) return;
+		// let reader = new FileReader();
+		if (!question.question_addon || question.question_addon === '{}') return;
 		console.log(question.question_addon);
 
 		if (question.question_type === 'with_youtube') {
 			handleQuestionChange('question_addon_src', question.question_addon);
-		} else {
-			reader.readAsDataURL(question.question_addon);
-			reader.onload = (e) => {
-				handleQuestionChange('question_addon_src', reader.result);
-				fileUpload(question.question_addon);
-			};
+		} else if (question.question_type === 'with_audio' || question.question_type === 'with_image') {
+			// reader.readAsDataURL(question.question_addon);
+			// reader.onload = (e) => {
+			// handleQuestionChange('question_addon_src', reader.result);
+			if (question.question_addon_src === '') {
+				fileUpload({
+					elementSetter: handleQuestionChange,
+					elementType: 'question',
+					file: question.question_addon,
+					pathBegin: `${question.question_id}`,
+				});
+			}
+			// };
 		}
-	}, [question.question_addon, question.question_type]);
+	}, [question.question_addon]);
 
 	// reseting src after type change
-	useEffect(() => {
-		setquestion({ ...question, question_addon_src: '', question_addon: '' });
-	}, [question.question_type]);
+	// useEffect(() => {
+	// 	console.log('reseting');
+	// 	setquestion({ ...question, question_addon_src: '', question_addon: '' });
+	// }, [question.question_type]);
 
 	// //marking upload as done
 	// useEffect(() => {
@@ -192,7 +200,7 @@ function Question({ props }) {
 							return answer.question_id == question.question_id;
 						})
 						.map((answer, index) => {
-							return <Answer key={answer.id} props={{ answer: answer, index: index, setanswers: props.setanswers, answers: answers }} />;
+							return <Answer key={answer.id} props={{ answer: answer, question_id: question.question_id, index: index, setanswers: props.setanswers, answers: answers }} />;
 						})}
 				</div>
 			)}

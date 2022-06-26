@@ -6,10 +6,10 @@ const Question = ({ children, question, id, numberOfQuestions }) => {
 	const renderTypeSwitch = () => {
 		switch (question_type) {
 			case 'with_audio':
-				return <ReactPlayer url={`/${question_addon_src}`} height={70} width={384} controls />;
+				return <ReactPlayer url={`${question_addon_src}`} height={70} width={340} controls />;
 				break;
 			case 'with_image':
-				return <Image alt='question image' src={`/${question_addon_src}`} className='max-w-sm' />;
+				return <Image alt='question image' src={`${question_addon_src}`} className='max-w-sm' width={'unset'} height={'unset'} objectFit={'contain'} />;
 				break;
 			case 'text_one':
 				return;
@@ -18,7 +18,7 @@ const Question = ({ children, question, id, numberOfQuestions }) => {
 				return;
 				break;
 			case 'with_youtube':
-				return <ReactPlayer url={`/${question_addon_src}`} width={384} controls />;
+				return <ReactPlayer url={`${question_addon_src}`} width={384} controls />;
 				break;
 		}
 	};
