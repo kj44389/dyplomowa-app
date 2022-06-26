@@ -9,7 +9,6 @@ import { filesContext } from 'contexts/filesContext';
 
 function Answer({ props }) {
 	const [answer, setAnswer] = useState(props.answer);
-	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const index = props.index;
 	const fileUpload = useContext(filesContext);
 
@@ -26,16 +25,10 @@ function Answer({ props }) {
 	);
 
 	useEffect(() => {
-		// let reader = new FileReader();
 		if (!answer.answer_addon || answer.answer_addon === '{}') return;
-
 		if (answer.answer_type === 'with_youtube') {
 			handleAnswerChange('answer_addon_src', answer.answer_addon);
 		} else if (answer.answer_type === 'with_audio' || answer.answer_type === 'with_image') {
-			// reader.readAsDataURL(answer.answer_addon);
-			// reader.onload = (e) => {
-			// handleAnswerChange('answer_addon_src', reader.result);
-
 			fileUpload({
 				elementSetter: handleAnswerChange,
 				elementType: 'answer',
@@ -107,7 +100,7 @@ function Answer({ props }) {
 							type='checkbox'
 							className='checkbox checkbox-lg'
 							defaultChecked={answer.answer_correct || false}
-							onChange={(e) => handleAnswerChange('answer_correct', e.target.value)}
+							onChange={(e) => handleAnswerChange('answer_correct', !answer.answer_correct)}
 						/>
 						<span className='label-text'>Correct Answer</span>
 					</label>

@@ -12,7 +12,6 @@ function Question({ props }) {
 	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const answers = props.answers;
 	const fileUpload = useContext(filesContext);
-	// window.FileReader = new FileReader();
 
 	//update questions state
 	useEffect(() => {
@@ -26,36 +25,14 @@ function Question({ props }) {
 		},
 		[question]
 	);
-	// // FILE UPLOAD execution
-	// const handleAddFile = useCallback(
-	// 	async (file) => {
-	// 		// 		// console.log('🚀 ~ file: Question.js ~ line 31 ~ form', question.question_addon);
-	// 		// 		// handleQuestionChange('question_addon_src', form.file);
-	// 		const res = await _fetch(`${absoluteUrlPrefix}/api/v2/test/uploadFile?`, {
-	// 			method: 'POST',
-	// 			body: file,
-	// 			headers: { contentType: 'application/octet-stream' },
-	// 			// headers: { contentType: 'application/octet-stream' },
-	// 		});
-	// 		// 		// 		let { data, filepath } = await res.json();
-	// 		// 		// 		filepath = filepath.replaceAll('\\', '/');
-	// 		// 		// 		handleQuestionChange('question_addon_src', filepath);
-	// 	},
-	// 	[handleQuestionChange]
-	// );
 
 	// // FILE UPLOAD preparin
 	useEffect(() => {
-		// let reader = new FileReader();
 		if (!question.question_addon || question.question_addon === '{}') return;
-		console.log(question.question_addon);
 
 		if (question.question_type === 'with_youtube') {
 			handleQuestionChange('question_addon_src', question.question_addon);
 		} else if (question.question_type === 'with_audio' || question.question_type === 'with_image') {
-			// reader.readAsDataURL(question.question_addon);
-			// reader.onload = (e) => {
-			// handleQuestionChange('question_addon_src', reader.result);
 			if (question.question_addon_src === '') {
 				fileUpload({
 					elementSetter: handleQuestionChange,
@@ -64,21 +41,8 @@ function Question({ props }) {
 					pathBegin: `${question.question_id}`,
 				});
 			}
-			// };
 		}
 	}, [question.question_addon]);
-
-	// reseting src after type change
-	// useEffect(() => {
-	// 	console.log('reseting');
-	// 	setquestion({ ...question, question_addon_src: '', question_addon: '' });
-	// }, [question.question_type]);
-
-	// //marking upload as done
-	// useEffect(() => {
-	// 	setUploadingStatus('done');
-	// 	handleQuestionChange('question_addon', null);
-	// }, [question.question_addon_src]);
 
 	function renderQuestionSwitch(type) {
 		switch (type) {

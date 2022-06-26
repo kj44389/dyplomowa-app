@@ -98,8 +98,6 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 	const [answers, setanswers] = useState(fetched_answers);
 	const router = useRouter();
 	const edit = router.query.edit;
-	// useEffect(() => {
-	// }, [test]);
 
 	async function handleQuestionsUpdate(question) {
 		questions[question.id - 1] = question;
@@ -157,16 +155,7 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 			cacheControl: '3600',
 			upsert: false,
 		});
-		// let form = new FormData();
-		// // let reader = new FileReader();
-		// form.append(`${file.name}`, file);
-		// // reader.readAsDataURL(file);
-		// // reader.onload = function () {
-		// // console.log(reader.result);
-		// response = fetch(`${absoluteUrlPrefix}/api/v2/test/uploadFile?test_id=${test.test_id}`, { method: 'POST', body: form, headers: { 'Content-Type': 'multipart/form-data' } });
 		toast.promise(response, { loading: `File ${file.name} uploading...`, success: `File uploaded successfully!`, error: 'Something went wrong!' });
-		// // };
-
 		response.finally(async () => {
 			let { publicURL, error } = await supabase.storage.from('files').getPublicUrl(`${test.test_id}/${pathBegin}/${fileName}`);
 			elementSetter(`${elementType}_addon_src`, publicURL);
@@ -191,7 +180,6 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 			router.push('/tests/show');
 		});
 	}
-
 	return (
 		<>
 			{!error ? (
