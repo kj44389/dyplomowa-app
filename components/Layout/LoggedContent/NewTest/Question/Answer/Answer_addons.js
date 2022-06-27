@@ -1,14 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 
 function Answer_addons({ props }) {
-	const [youtubePicked, setyoutubePicked] = useState(false);
 	const youtubeUrl = useRef();
-
-	useEffect(() => {
-		if (!youtubePicked) return;
-		props.handleAnswerChange('answer_addon', youtubeUrl.current.value);
-		setyoutubePicked(false);
-	}, [youtubePicked, props]);
 
 	let LabelClassName = `label flex flex-col space-y-4 items-start md:flex md:flex-row md:space-y-0 md:items-center`;
 	if (props.type === 'youtube') {
@@ -29,9 +22,9 @@ function Answer_addons({ props }) {
 						<button
 							className='btn btn-sm self-center outline outline-2 outline-green-500'
 							onClick={(e) => {
-								setyoutubePicked(true);
+								props.handleAnswerChange('answer_addon', youtubeUrl?.current?.value);
 							}}>
-							Załaduj film
+							Load Video
 						</button>
 					</>
 				)}

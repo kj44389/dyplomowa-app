@@ -1,40 +1,47 @@
-import _fetch from 'isomorphic-fetch';
-import { absoluteUrlPrefix } from 'next.config';
-import { useEffect, useState, useCallback, useContext } from 'react';
-import ReactPlayer from 'react-player';
-import Answer_addons from './Answer_addons';
-import { v4 } from 'uuid';
-import Image from 'next/image';
 import { filesContext } from 'contexts/filesContext';
+import { useCallback, useContext, Suspense, useState, useEffect } from 'react';
+import Answer_addons from './Answer_addons';
+import dynamic from 'next/dynamic';
+const ReactPlayer = dynamic(() => import('react-player'), {
+	suspense: true,
+});
+const Image = dynamic(() => import('next/image'), {
+	suspense: true,
+});
 
 function Answer({ props }) {
 	const [answer, setAnswer] = useState(props.answer);
 	const index = props.index;
 	const fileUpload = useContext(filesContext);
 
-	useEffect(() => {
-		props.setanswers(answer);
-	}, [answer]);
-
 	const handleAnswerChange = useCallback(
 		async (what_changing, value) => {
-			answer[`${what_changing}`] = value;
-			setAnswer({ ...answer, [what_changing]: value });
+			if (what_changing === 'answer_type') {
+				setAnswer({ ...answer, [what_changing]: value, answer_addon: '', answer_addon_src: '' });
+			} else {
+				answer[`${what_changing}`] = value;
+				setAnswer({ ...answer, [what_changing]: value });
+			}
+			props.setanswers(answer);
 		},
 		[answer]
 	);
 
 	useEffect(() => {
-		if (!answer.answer_addon || answer.answer_addon === '{}') return;
-		if (answer.answer_type === 'with_youtube') {
-			handleAnswerChange('answer_addon_src', answer.answer_addon);
-		} else if (answer.answer_type === 'with_audio' || answer.answer_type === 'with_image') {
-			fileUpload({
-				elementSetter: handleAnswerChange,
-				elementType: 'answer',
-				file: answer.answer_addon,
-				pathBegin: `${props.question_id}/${answer.answer_id}`,
-			});
+		if (answer.answer_addon && answer.answer_addon !== '{}') {
+			if (answer.answer_type === 'with_youtube') {
+				handleAnswerChange('answer_addon_src', answer.answer_addon);
+				handleAnswerChange('answer_addon', '');
+			} else if (answer.answer_type === 'with_audio' || answer.answer_type === 'with_image') {
+				if (answer.answer_addon_src === '') {
+					fileUpload({
+						elementSetter: handleAnswerChange,
+						elementType: 'answer',
+						file: answer.answer_addon,
+						pathBegin: `${props.question_id}/${answer.answer_id}`,
+					});
+				}
+			}
 		}
 	}, [answer.answer_addon]);
 
@@ -107,11 +114,14 @@ function Answer({ props }) {
 				</div>
 			</div>
 			<div className='flex items-center justify-center'>
-				{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && (
-					<Image alt='Answer image' src={`${answer.answer_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
-				)}
-				{answer.answer_addon_src !== '' && answer.answer_type == 'with_audio' && <ReactPlayer url={`${answer.answer_addon_src}`} height={70} controls />}
-				{answer.answer_addon_src !== '' && answer.answer_type == 'with_youtube' && <ReactPlayer url={answer.answer_addon_src} controls />}
+				<Suspense fallback={'loading...'}>
+					{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && (
+						<Image alt='Answer image' src={`${answer.answer_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
+					)}
+
+					{answer.answer_addon_src !== '' && answer.answer_type == 'with_audio' && <ReactPlayer url={`${answer.answer_addon_src}`} height={70} controls />}
+					{answer.answer_addon_src !== '' && answer.answer_type == 'with_youtube' && <ReactPlayer url={answer.answer_addon_src} controls />}
+				</Suspense>
 			</div>
 			{renderAnswerSwitch(answer.answer_type)}
 			<div className='form-control flex w-full'>

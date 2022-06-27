@@ -1,8 +1,8 @@
 import Layout from 'components/Layout/Layout';
 import { absoluteUrlPrefix } from 'next.config';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { v4 } from 'uuid';
-import Question from 'components/Layout/LoggedContent/NewTest/Question/Question';
+// import Question from 'components/Layout/LoggedContent/NewTest/Question/Question';
 import crypto from 'crypto';
 import moment from 'moment';
 import router from 'next/router';
@@ -12,6 +12,11 @@ import { useRouter } from 'next/router';
 
 import { filesContext } from 'contexts/filesContext';
 import { supabase } from 'lib/supabase';
+import dynamic from 'next/dynamic';
+
+const Question = dynamic(() => import('components/Layout/LoggedContent/NewTest/Question/Question'), {
+	suspense: true,
+});
 
 export async function getServerSideProps(context) {
 	const ifEdit = context.query?.edit;
@@ -240,30 +245,32 @@ function NewTest({ fetched_test, fetched_answers, fetched_questions, error }) {
 						</div>
 
 						<filesContext.Provider value={handleFileUpload}>
-							{questions.length > 0 && (
-								<div className='card bg-base-200 mt-3 mb-3 w-full max-w-sm p-1 md:max-w-[600px] md:p-10'>
-									{questions.map((question) => {
-										return (
-											<Question
-												props={{
-													questions: questions,
-													question: question,
-													setquestions: handleQuestionsUpdate,
-													answers: answers,
-													addAnswer: handleAddAnswer,
-													setanswers: handleAnswersUpdate,
-												}}
-												key={question.id}
-											/>
-										);
-									})}
-								</div>
-							)}
+							<Suspense fallback={'loading...'}>
+								{questions.length > 0 && (
+									<div className='card bg-base-200 mt-3 mb-3 w-full max-w-sm p-1 md:max-w-[600px] md:p-10'>
+										{questions?.map((question) => {
+											return (
+												<Question
+													props={{
+														questions: questions,
+														question: question,
+														setquestions: handleQuestionsUpdate,
+														answers: answers,
+														addAnswer: handleAddAnswer,
+														setanswers: handleAnswersUpdate,
+													}}
+													key={question.id}
+												/>
+											);
+										})}
+									</div>
+								)}
+							</Suspense>
 						</filesContext.Provider>
 						<button onClick={handleAddQuestion} className='btn btn-outline btn-sm m-4'>
 							Add Question
 						</button>
-						<button onClick={handleSubmit} className='btn btn fixed bottom-1 right-1 m-4 bg-green-500'>
+						<button onClick={handleSubmit} className='btn fixed bottom-1 right-1 m-4 bg-green-500'>
 							Submit
 						</button>
 					</div>

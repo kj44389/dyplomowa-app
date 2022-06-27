@@ -1,4 +1,3 @@
-import { CheckIcon } from '@heroicons/react/solid';
 import ConfirmationModal from 'components/confirmationModal/ConfirmationModal';
 import Layout from 'components/Layout/Layout';
 import TestList from 'components/TestList/testList';

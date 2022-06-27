@@ -1,49 +1,60 @@
-import { absoluteUrlPrefix } from 'next.config';
-import { useContext, useEffect, useState, useCallback } from 'react';
-import Answer from './Answer/Answer';
 import Question_addons from './Question_addons';
-import ReactPlayer from 'react-player';
-import _fetch from 'isomorphic-fetch';
-import Image from 'next/image';
+
+import { Suspense, useCallback, useContext, useState, useEffect } from 'react';
 import { filesContext } from 'contexts/filesContext';
+
+import dynamic from 'next/dynamic';
+
+const Answer = dynamic(() => import('./Answer/Answer'), {
+	suspense: true,
+});
+const ReactPlayer = dynamic(() => import('react-player'), {
+	suspense: true,
+});
+
+const Image = dynamic(() => import('next/image'), {
+	suspense: true,
+});
 
 function Question({ props }) {
 	const [question, setquestion] = useState(props.question);
 	const [uploadingStatus, setUploadingStatus] = useState('pending');
 	const answers = props.answers;
-	const fileUpload = useContext(filesContext);
 
-	//update questions state
-	useEffect(() => {
-		props.setquestions(question);
-	}, [question]);
+	const fileUpload = useContext(filesContext);
 
 	const handleQuestionChange = useCallback(
 		async (what_changing, value) => {
-			question[`${what_changing}`] = value;
-			setquestion({ ...question, [what_changing]: value });
+			if (what_changing === 'question_type') {
+				setquestion({ ...question, [what_changing]: value, question_addon: '', question_addon_src: '' });
+			} else {
+				question[`${what_changing}`] = value;
+				setquestion({ ...question, [what_changing]: value });
+			}
+			props.setquestions(question);
 		},
 		[question]
 	);
 
-	// // FILE UPLOAD preparin
 	useEffect(() => {
-		if (!question.question_addon || question.question_addon === '{}') return;
-
-		if (question.question_type === 'with_youtube') {
-			handleQuestionChange('question_addon_src', question.question_addon);
-		} else if (question.question_type === 'with_audio' || question.question_type === 'with_image') {
-			if (question.question_addon_src === '') {
-				fileUpload({
-					elementSetter: handleQuestionChange,
-					elementType: 'question',
-					file: question.question_addon,
-					pathBegin: `${question.question_id}`,
-				});
+		if (question.question_addon && question.question_addon !== '{}') {
+			if (question.question_type === 'with_youtube') {
+				handleQuestionChange('question_addon_src', question.question_addon);
+				handleQuestionChange('question_addon', '');
+			} else if (question.question_type === 'with_audio' || question.question_type === 'with_image') {
+				if (question.question_addon_src === '') {
+					fileUpload({
+						elementSetter: handleQuestionChange,
+						elementType: 'question',
+						file: question.question_addon,
+						pathBegin: `${question.question_id}`,
+					});
+				}
 			}
 		}
 	}, [question.question_addon]);
-
+	// console.table(question);
+	//helper function
 	function renderQuestionSwitch(type) {
 		switch (type) {
 			case 'text_one':
@@ -82,7 +93,6 @@ function Question({ props }) {
 				);
 		}
 	}
-	//helper function
 
 	return (
 		<div className='indicator mt-16 mb-12 flex h-auto w-full flex-col space-y-6'>
@@ -104,11 +114,13 @@ function Question({ props }) {
 			</div>
 
 			<div className='flex items-center justify-center'>
-				{question.question_addon_src !== '' && question.question_type == 'with_image' && (
-					<Image alt='question image' src={`${question.question_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
-				)}
-				{question.question_addon_src !== '' && question.question_type == 'with_audio' && <ReactPlayer url={`${question.question_addon_src}`} height={70} controls />}
-				{question.question_addon_src !== '' && question.question_type == 'with_youtube' && <ReactPlayer url={question.question_addon_src} controls />}
+				<Suspense fallback={'loading...'}>
+					{question.question_addon_src !== '' && question.question_type == 'with_image' && (
+						<Image alt='question image' src={`${question.question_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
+					)}
+					{question.question_addon_src !== '' && question.question_type == 'with_audio' && <ReactPlayer url={`${question.question_addon_src}`} height={70} controls />}
+					{question.question_addon_src !== '' && question.question_type == 'with_youtube' && <ReactPlayer url={question.question_addon_src} controls />}
+				</Suspense>
 			</div>
 			{renderQuestionSwitch(question.question_type)}
 			{/* question name */}
@@ -157,17 +169,24 @@ function Question({ props }) {
 				</div>
 			</div>
 			{/* show answers for this question */}
-			{answers.length > 0 && (
-				<div className='space-y-24 pt-12'>
-					{answers
-						.filter((answer) => {
-							return answer.question_id == question.question_id;
-						})
-						.map((answer, index) => {
-							return <Answer key={answer.id} props={{ answer: answer, question_id: question.question_id, index: index, setanswers: props.setanswers, answers: answers }} />;
-						})}
-				</div>
-			)}
+			<Suspense fallback={'loading'}>
+				{answers.length > 0 && (
+					<div className='space-y-24 pt-12'>
+						{answers
+							.filter((answer) => {
+								return answer.question_id == question.question_id;
+							})
+							.map((answer, index) => {
+								return (
+									<Answer
+										key={answer.id}
+										props={{ answer: answer, question_id: question.question_id, index: index, setanswers: props.setanswers, answers: answers }}
+									/>
+								);
+							})}
+					</div>
+				)}
+			</Suspense>
 			{/* add new answer */}
 			<button
 				onClick={(e) => {
