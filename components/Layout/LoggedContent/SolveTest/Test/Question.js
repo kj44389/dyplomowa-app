@@ -9,7 +9,7 @@ const Question = ({ children, question, id, numberOfQuestions }) => {
 				return <ReactPlayer url={`${question_addon_src}`} height={70} width={340} controls />;
 				break;
 			case 'with_image':
-				return <Image alt='question image' src={`${question_addon_src}`} className='max-w-sm' width={'unset'} height={'unset'} objectFit={'contain'} />;
+				return <Image alt='question image' src={`${question_addon_src}`} className='max-w-sm' height={300} width={600} layout={'fixed'} />;
 				break;
 			case 'text_one':
 				return;
@@ -28,7 +28,7 @@ const Question = ({ children, question, id, numberOfQuestions }) => {
 				<div className='rounded-md bg-green-500/20 px-4 py-2 text-sm  text-white '>
 					Pytanie {id} z {numberOfQuestions} : {question_name}
 				</div>
-				{question_type !== 'text_one' && question_type !== 'text_many' && <div>{renderTypeSwitch()}</div>}
+				{question_type !== 'text_one' && question_type !== 'text_many' && <div className='relative flex max-w-sm'>{renderTypeSwitch()}</div>}
 				<div className='flex w-full flex-col'>{children}</div>
 			</div>
 		</div>

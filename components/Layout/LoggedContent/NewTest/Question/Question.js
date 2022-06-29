@@ -4,17 +4,11 @@ import { Suspense, useCallback, useContext, useState, useEffect } from 'react';
 import { filesContext } from 'contexts/filesContext';
 
 import dynamic from 'next/dynamic';
+import Answer from './Answer/Answer';
 
-const Answer = dynamic(() => import('./Answer/Answer'), {
-	suspense: true,
-});
-const ReactPlayer = dynamic(() => import('react-player'), {
-	suspense: true,
-});
+const ReactPlayer = dynamic(() => import('react-player'), {});
 
-const Image = dynamic(() => import('next/image'), {
-	suspense: true,
-});
+const Image = dynamic(() => import('next/image'), {});
 
 function Question({ props }) {
 	const [question, setquestion] = useState(props.question);
@@ -114,13 +108,11 @@ function Question({ props }) {
 			</div>
 
 			<div className='flex items-center justify-center'>
-				<Suspense fallback={'loading...'}>
-					{question.question_addon_src !== '' && question.question_type == 'with_image' && (
-						<Image alt='question image' src={`${question.question_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
-					)}
-					{question.question_addon_src !== '' && question.question_type == 'with_audio' && <ReactPlayer url={`${question.question_addon_src}`} height={70} controls />}
-					{question.question_addon_src !== '' && question.question_type == 'with_youtube' && <ReactPlayer url={question.question_addon_src} controls />}
-				</Suspense>
+				{question.question_addon_src !== '' && question.question_type == 'with_image' && (
+					<Image alt='question image' src={`${question.question_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
+				)}
+				{question.question_addon_src !== '' && question.question_type == 'with_audio' && <ReactPlayer url={`${question.question_addon_src}`} height={70} controls />}
+				{question.question_addon_src !== '' && question.question_type == 'with_youtube' && <ReactPlayer url={question.question_addon_src} controls />}
 			</div>
 			{renderQuestionSwitch(question.question_type)}
 			{/* question name */}
@@ -169,24 +161,19 @@ function Question({ props }) {
 				</div>
 			</div>
 			{/* show answers for this question */}
-			<Suspense fallback={'loading'}>
-				{answers.length > 0 && (
-					<div className='space-y-24 pt-12'>
-						{answers
-							.filter((answer) => {
-								return answer.question_id == question.question_id;
-							})
-							.map((answer, index) => {
-								return (
-									<Answer
-										key={answer.id}
-										props={{ answer: answer, question_id: question.question_id, index: index, setanswers: props.setanswers, answers: answers }}
-									/>
-								);
-							})}
-					</div>
-				)}
-			</Suspense>
+
+			{answers.length > 0 && (
+				<div className='space-y-24 pt-12'>
+					{answers
+						.filter((answer) => {
+							return answer.question_id == question.question_id;
+						})
+						.map((answer, index) => {
+							return <Answer key={answer.id} props={{ answer: answer, question_id: question.question_id, index: index, setanswers: props.setanswers, answers: answers }} />;
+						})}
+				</div>
+			)}
+
 			{/* add new answer */}
 			<button
 				onClick={(e) => {

@@ -2,12 +2,8 @@ import { filesContext } from 'contexts/filesContext';
 import { useCallback, useContext, Suspense, useState, useEffect } from 'react';
 import Answer_addons from './Answer_addons';
 import dynamic from 'next/dynamic';
-const ReactPlayer = dynamic(() => import('react-player'), {
-	suspense: true,
-});
-const Image = dynamic(() => import('next/image'), {
-	suspense: true,
-});
+const ReactPlayer = dynamic(() => import('react-player'), {});
+const Image = dynamic(() => import('next/image'), {});
 
 function Answer({ props }) {
 	const [answer, setAnswer] = useState(props.answer);
@@ -114,14 +110,12 @@ function Answer({ props }) {
 				</div>
 			</div>
 			<div className='flex items-center justify-center'>
-				<Suspense fallback={'loading...'}>
-					{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && (
-						<Image alt='Answer image' src={`${answer.answer_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
-					)}
+				{answer.answer_addon_src !== '' && answer.answer_type == 'with_image' && (
+					<Image alt='Answer image' src={`${answer.answer_addon_src}`} className='max-w-sm' height={400} width={700} layout={'fixed'} />
+				)}
 
-					{answer.answer_addon_src !== '' && answer.answer_type == 'with_audio' && <ReactPlayer url={`${answer.answer_addon_src}`} height={70} controls />}
-					{answer.answer_addon_src !== '' && answer.answer_type == 'with_youtube' && <ReactPlayer url={answer.answer_addon_src} controls />}
-				</Suspense>
+				{answer.answer_addon_src !== '' && answer.answer_type == 'with_audio' && <ReactPlayer url={`${answer.answer_addon_src}`} height={70} controls />}
+				{answer.answer_addon_src !== '' && answer.answer_type == 'with_youtube' && <ReactPlayer url={answer.answer_addon_src} controls />}
 			</div>
 			{renderAnswerSwitch(answer.answer_type)}
 			<div className='form-control flex w-full'>

@@ -21,6 +21,7 @@ const handler = async (req, res) => {
 	if (req.method !== 'POST') res.status(402).json({ message: 'method not allowed' });
 
 	const body = JSON.parse(req.body);
+	console.log(body);
 	const { questions, answers, questionsState, test_id, user_email, user_full_name } = body;
 	const session = await getSession({ req });
 

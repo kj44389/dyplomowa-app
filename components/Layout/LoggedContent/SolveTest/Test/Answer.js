@@ -9,7 +9,7 @@ const Answer = ({ answer, index, question_id, disabled, picked, onClick }) => {
 				return <ReactPlayer url={`${answer_addon_src}`} height={70} width={340} controls />;
 				break;
 			case 'with_image':
-				return <Image alt='answer image' src={`${answer_addon_src}`} className='max-w-sm' layout={'fill'} objectFit={'cover'} />;
+				return <Image alt='answer image' src={`${answer_addon_src}`} className='max-w-sm' height={70} width={340} layout={'fixed'} />;
 				break;
 			case 'text_one':
 				return;
@@ -30,7 +30,7 @@ const Answer = ({ answer, index, question_id, disabled, picked, onClick }) => {
 				</div>
 			</>
 			<div className='flex-column flex h-full max-h-64 w-full max-w-sm flex-col items-center justify-center space-y-4 pl-5 text-center text-sm'>
-				{answer_type !== 'text_one' && answer_type !== 'text_many' && <div className='relative h-64 max-h-64 w-full max-w-sm'>{renderTypeSwitch()}</div>}
+				{answer_type !== 'text_one' && answer_type !== 'text_many' && <div className='relative flex h-64 max-h-64 max-w-sm'>{renderTypeSwitch()}</div>}
 				<div className='w-full text-center'>{answer_name}</div>
 			</div>
 		</div>
