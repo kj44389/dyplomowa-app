@@ -1,12 +1,18 @@
 # Little about this project. 
 This project is a site for online knowledge tests where users can create, edit, and share tests. In this project I have used some tech I didn't work with before, like: Next.js, React, TailwindCSS. Everything that I achieved is a product of my self-learning ability.  
 
+## Project status:
+Im still working on this project. If u want collaborate and help me create the perfect site for online tests fork it! :)
+
 ## Tech Stack
 * [Next.js](https://nextjs.org/)
 * [React.js](https://reactjs.org/)
+* [Supabase](https://supabase.com/)
 * [TailwindCSS](https://tailwindcss.com/)
 * [NextAuth](https://next-auth.js.org/)
-* MySQL
+
+## LIVE:
+[Click here](https://examine-lab.vercel.app/)
 
 ## Preview
 ### Log in page
@@ -17,9 +23,6 @@ This project is a site for online knowledge tests where users can create, edit, 
 
 ### Dashboard - PC
 ![dashboard pc](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/Dashboard_PC.png?raw=true)
-
-### Tests list page
-![Tests list](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestsList.png?raw=true)
 
 ### Form to provide test code for logged users
 ![Form to provide test code for logged users](https://github.com/kj44389/dyplomowa-app/blob/main/Examples/TestCodeFormForUsers.png?raw=true)
