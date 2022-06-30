@@ -20,13 +20,12 @@ const CreatorStats = () => {
 	const questionStats = useContext(questionStatsContext);
 
 	if (questionStats?.questionSummary.length > 0 && worstQuestion === null) {
-		console.log('in');
 		const minPickedRight = Math.min(...questionStats.questionSummary.map((data) => data?.picked_right - data?.picked_total));
 		let result = questionStats.questionSummary.filter(({ picked_right, picked_total }) => picked_right - picked_total === minPickedRight);
 		setWorstQuestion(result[0]);
 	}
 
-	return questionStats?.questionSummary ? (
+	return questionStats?.questionSummary?.length > 0 ? (
 		<div className='flex w-full max-w-xs flex-col md:max-w-md'>
 			<div className='m-2 w-full max-w-xs rounded-2xl bg-gray-800 p-4 text-red-400 shadow-lg md:max-w-md'>
 				<div className='flex flex-col'>

@@ -18,9 +18,12 @@ function Exception(status, message) {
 
 const handler = async (req, res) => {
 	if (req.method !== 'POST') res.status(402).json({ message: 'method not allowed' });
-
-	const body = JSON.parse(req.body);
-	console.log(body);
+	let body;
+	try {
+		body = JSON.parse(req.body);
+	} catch (err) {
+		return res.send(err);
+	}
 	const { questions, answers, questionsState, test_id, user_email, user_full_name } = body;
 	const session = await getSession({ req });
 
@@ -87,6 +90,7 @@ const handler = async (req, res) => {
 			});
 		}
 		let { data: doneAnswers, error: doneAnswersError } = await supabase.from('test_done_answers').insert(arrayOfJsons);
+
 		if (doneAnswersError) {
 			throw new Exception(500, "Couldn't associate answers with test done");
 		}
